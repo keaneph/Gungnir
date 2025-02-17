@@ -1,4 +1,5 @@
-<UserControl x:Class="glaive.Views.ViewCollegesControl"
+<!-- ViewCollegesControl.xaml -->
+<UserControl x:Class="glaive.ViewCollegesControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -6,14 +7,65 @@
              xmlns:local="clr-namespace:glaive"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Background="#EEF3F5">
-        <ListView x:Name="CollegeListView" Margin="20">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="200"/>
-                    <GridViewColumn Header="Code" DisplayMemberBinding="{Binding Code}" Width="100"/>
-                </GridView>
-            </ListView.View>
-        </ListView>
-    </Grid>
+	<Grid Background="#EEF3F5">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+
+		<!-- Top Panel -->
+		<StackPanel Orientation="Horizontal" Grid.Row="0" Margin="20,20,20,0">
+			<ToggleButton x:Name="EditModeToggleButton" Content="Enable Edit Mode" Checked="EditModeToggleButton_Checked" Unchecked="EditModeToggleButton_Unchecked"/>
+			<!-- ComboBox for Sorting Options -->
+			<ComboBox x:Name="SortComboBox" Width="150" Margin="10,0,0,0" SelectionChanged="SortComboBox_SelectionChanged">
+				<ComboBoxItem Content="Date and Time Modified (Newest First)"/>
+				<ComboBoxItem Content="Alphabetical College Name"/>
+				<ComboBoxItem Content="Alphabetical College Code"/>
+				<ComboBoxItem Content="Alphabetical User"/>
+			</ComboBox>
+		</StackPanel>
+
+		<!-- ListView with Multi-Selection -->
+		<ListView x:Name="CollegeListView" Margin="20" Grid.Row="1" SelectionMode="Multiple" HorizontalAlignment="Stretch">
+			<ListView.View>
+				<GridView>
+					<GridViewColumn Header="Name" Width="150">
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" IsEnabled="{Binding ElementName=EditModeToggleButton, Path=IsChecked}" FontSize="11"/>
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+					<GridViewColumn Header="Code" Width="50">
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<TextBox Text="{Binding Code, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" IsEnabled="{Binding ElementName=EditModeToggleButton, Path=IsChecked}" FontSize="11"/>
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+					<GridViewColumn Header="Date and Time" Width="100">
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding DateTime}" FontSize="11" />
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+					<GridViewColumn Header="User" Width="50">
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding User}" FontSize="11" />
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+				</GridView>
+			</ListView.View>
+		</ListView>
+
+		<!-- Bottom Panel -->
+		<StackPanel Orientation="Horizontal" Grid.Row="2" Margin="20,0,20,20">
+			<Button Content="Clear Colleges" x:Name="ClearCollegesButton" Click="ClearCollegesButton_Click" Padding="10,5" FontWeight="Bold" HorizontalAlignment="Left"/>
+			<Button Content="Delete Selected" x:Name="DeleteSelectedButton" Click="DeleteSelectedButton_Click" Padding="10,5" FontWeight="Bold" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+		</StackPanel>
+	</Grid>
 </UserControl>

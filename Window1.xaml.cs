@@ -1,7 +1,8 @@
 ﻿using System.Windows;
 
-namespace glaive
+namespace glaive // Ensure this matches the x:Class in LoginWindow.xaml
 {
+    using sis_app;  // Add this using directive
     public partial class LoginWindow : Window
     {
         public LoginWindow()

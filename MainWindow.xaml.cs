@@ -2,23 +2,16 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using glaive.Views; // Ensure this is present
+using glaive;
 
-namespace glaive
+namespace sis_app
 {
     public partial class MainWindow : Window
     {
         private CollegeDataService _collegeDataService;
         private AddCollegeControl _addCollegeControl;
         private ViewCollegesControl _viewCollegesControl;
-
-        //private AddOption2View _addOption2View;
-        //private AddOption3View _addOption3View;
-        //private ViewOption2View _viewOption2View;
-        //private ViewOption3View _viewOption3View;
-        //private HistoryView _historyView;
-        //private AboutView _aboutView;
-        private DashboardView _dashboardView;  // Add this line
+        private DashboardView _dashboardView;
 
         // Property to store the logged-in user name.
         // (This would typically be set after a successful login.)
@@ -31,20 +24,14 @@ namespace glaive
             _addCollegeControl = new AddCollegeControl(_collegeDataService);
             _viewCollegesControl = new ViewCollegesControl(_collegeDataService);
 
-            //_addOption2View = new AddOption2View();
-            //_addOption3View = new AddOption3View();
-            //_viewOption2View = new ViewOption2View();
-            //_viewOption3View = new ViewOption3View();
-            //_historyView = new HistoryView();
-            //_aboutView = new AboutView();
-            _dashboardView = new DashboardView(); // Add this line
+            _dashboardView = new DashboardView();
 
             // Update profile display with current user information.
             SideProfileName.Text = $"Logged in as: {CurrentUser}";
             ProfileName.Text = CurrentUser;
 
             // Set initial content to the Dashboard
-            MainContent.Content = _dashboardView; // Change this line
+            MainContent.Content = _dashboardView;
         }
 
         // Search Box Placeholder Logic
@@ -75,7 +62,7 @@ namespace glaive
         // Dashboard button: navigate to the dashboard page
         private void NavigateHome_Click(object sender, RoutedEventArgs e)
         {
-            MainContent.Content = _dashboardView; // Change this line
+            MainContent.Content = _dashboardView;
             UpdateDirectory("Home");
         }
 
@@ -85,16 +72,15 @@ namespace glaive
             MainContent.Content = _addCollegeControl;
             UpdateDirectory("Add/Option1");
         }
-
         private void NavigateAddOption2_Click(object sender, RoutedEventArgs e)
         {
-            //MainContent.Content = _addOption2View;
+            // Implement the logic for adding option 2
             UpdateDirectory("Add/Option2");
         }
 
         private void NavigateAddOption3_Click(object sender, RoutedEventArgs e)
         {
-            //MainContent.Content = _addOption3View;
+            // Implement the logic for adding option 3
             UpdateDirectory("Add/Option3");
         }
 
@@ -108,26 +94,27 @@ namespace glaive
 
         private void NavigateViewOption2_Click(object sender, RoutedEventArgs e)
         {
-            //MainContent.Content = _viewOption2View;
+            // Implement the logic for viewing option 2
             UpdateDirectory("View/Option2");
         }
 
         private void NavigateViewOption3_Click(object sender, RoutedEventArgs e)
         {
-            //MainContent.Content = _viewOption3View;
+            // Implement the logic for viewing option 3
             UpdateDirectory("View/Option3");
+        }
+
+
+        private void NavigateAbout_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new TextBlock { Text = "About This Application", FontSize = 20 };
+            UpdateDirectory("About");
         }
 
         private void NavigateHistory_Click(object sender, RoutedEventArgs e)
         {
-            //MainContent.Content = _historyView;
+            // Implement the logic for the history page
             UpdateDirectory("History");
-        }
-
-        private void NavigateAbout_Click(object sender, RoutedEventArgs e)
-        {
-            //MainContent.Content = _aboutView;
-            UpdateDirectory("About");
         }
     }
 }

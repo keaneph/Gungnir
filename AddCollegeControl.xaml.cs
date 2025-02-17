@@ -1,7 +1,9 @@
-﻿using System.Windows;
+﻿using System.Text.RegularExpressions;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
-namespace glaive.Views
+namespace glaive
 {
     public partial class AddCollegeControl : UserControl
     {
@@ -17,7 +19,13 @@ namespace glaive.Views
         {
             if (!string.IsNullOrEmpty(CollegeNameTextBox.Text) && !string.IsNullOrEmpty(CollegeCodeTextBox.Text))
             {
-                College newCollege = new College { Name = CollegeNameTextBox.Text, Code = CollegeCodeTextBox.Text };
+                College newCollege = new College
+                {
+                    Name = CollegeNameTextBox.Text,
+                    Code = CollegeCodeTextBox.Text,
+                    DateTime = System.DateTime.Now,
+                    User = _collegeDataService.CurrentUser
+                };
                 _collegeDataService.AddCollege(newCollege);
 
                 MessageBox.Show($"Added college {newCollege.Name} ({newCollege.Code})", "Success");
@@ -31,6 +39,18 @@ namespace glaive.Views
             {
                 MessageBox.Show("Please enter both College Name and College Code.", "Error");
             }
+        }
+
+        private void CollegeNameTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^a-zA-Z]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void CollegeCodeTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^a-zA-Z]+");
+            e.Handled = regex.IsMatch(e.Text);
         }
     }
 }
