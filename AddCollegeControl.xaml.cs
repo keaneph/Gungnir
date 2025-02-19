@@ -52,5 +52,10 @@ namespace glaive
             Regex regex = new Regex("[^a-zA-Z]+");
             e.Handled = regex.IsMatch(e.Text);
         }
+
+        private void CollegeCodeTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
     }
 }

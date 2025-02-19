@@ -6,17 +6,59 @@
              xmlns:local="clr-namespace:glaive"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-	<Grid Background="#EEF3F5">
-		<StackPanel Margin="20">
-			<TextBlock Text="Add College" FontSize="24" FontWeight="Bold" Margin="0,0,0,10"/>
+    
+    <Grid>
+        <Border HorizontalAlignment="Center" 
+                VerticalAlignment="Center"
+                Width="400" 
+                CornerRadius="15" 
+                Padding="0,10,0,15" 
+                Opacity="0.95">
 
-			<TextBlock Text="College Name:" FontWeight="Bold" Margin="0,5,0,5"/>
-			<TextBox x:Name="CollegeNameTextBox" Width="400" Margin="0,0,0,10" PreviewTextInput="CollegeNameTextBox_PreviewTextInput"/>
+            <StackPanel Margin="20">
+                <!-- Header -->
+                <TextBlock Text="Add College" 
+                          FontSize="24" 
+                          FontWeight="Bold" 
+                          Style="{StaticResource DefaultTextBlockStyle}"
+                          Margin="0,10,0,0" 
+                          HorizontalAlignment="Center"/>
 
-			<TextBlock Text="College Code:" FontWeight="Bold" Margin="0,5,0,5"/>
-			<TextBox x:Name="CollegeCodeTextBox" Width="400" Margin="0,0,0,10" PreviewTextInput="CollegeCodeTextBox_PreviewTextInput"/>
+                <!-- College Name Field -->
+                <StackPanel Orientation="Vertical" Margin="0,20,0,10">
+                    <TextBlock Text="College Name" 
+                              Margin="40,0,0,0" 
+                              Style="{StaticResource DefaultTextBlockStyle}" 
+                              HorizontalAlignment="Left"/>
+                    <TextBox x:Name="CollegeNameTextBox" 
+                            Style="{StaticResource BaseInputStyle}"
+                            Height="30"
+                            PreviewTextInput="CollegeNameTextBox_PreviewTextInput"/>
+                </StackPanel>
 
-			<Button Content="Add College" x:Name="AddCollegeButton" Click="AddCollegeButton_Click" Padding="10,5" FontWeight="Bold"/>
-		</StackPanel>
-	</Grid>
+                <!-- College Code Field -->
+                <StackPanel Orientation="Vertical" Margin="0,10,0,0">
+                    <TextBlock Text="College Code" 
+                              Margin="40,0,0,0" 
+                              Style="{StaticResource DefaultTextBlockStyle}" 
+                              HorizontalAlignment="Left"/>
+                    <TextBox x:Name="CollegeCodeTextBox" 
+                            Style="{StaticResource BaseInputStyle}"
+                            Height="30"
+                            PreviewTextInput="CollegeCodeTextBox_PreviewTextInput" 
+                            TextChanged="CollegeCodeTextBox_TextChanged"/>
+                </StackPanel>
+
+                <!-- Add Button -->
+                <Button Content="Add College" 
+                        x:Name="AddCollegeButton" 
+                        Click="AddCollegeButton_Click"
+                        Style="{StaticResource AddButtonStyle}"
+                        Width="100" 
+                        Height="25"
+                        HorizontalAlignment="Right"
+                        Margin="0,20,40,0"/>
+            </StackPanel>
+        </Border>
+    </Grid>
 </UserControl>

@@ -15,46 +15,32 @@ namespace sis_app
         private ViewCollegesControl _viewCollegesControl;
         private ViewProgramsControl _viewProgramsControl;
         private DashboardView _dashboardView;
+        private StudentDataService _studentDataService;
+        private AddStudentControl _addStudentControl;
 
         public string CurrentUser { get; set; } = "Admin";
 
-        public MainWindow()
+        public MainWindow(string username)
         {
             InitializeComponent();
+
+            CurrentUser = username; // Set the current user from login
 
             _collegeDataService = new CollegeDataService("colleges.csv") { CurrentUser = CurrentUser };
             _programDataService = new ProgramDataService("programs.csv") { CurrentUser = CurrentUser };
 
-
             _addCollegeControl = new AddCollegeControl(_collegeDataService);
             _addProgramControl = new AddProgramControl(_programDataService, _collegeDataService);
             _viewCollegesControl = new ViewCollegesControl(_collegeDataService);
-            _viewProgramsControl = new ViewProgramsControl(_programDataService); 
+            _viewProgramsControl = new ViewProgramsControl(_programDataService);
             _dashboardView = new DashboardView();
+            _studentDataService = new StudentDataService("students.csv") { CurrentUser = CurrentUser };
+            _addStudentControl = new AddStudentControl(_studentDataService, _collegeDataService, _programDataService);
 
-            SideProfileName.Text = $"Logged in as: {CurrentUser}";
+            LoginStatus.Text = CurrentUser;
             ProfileName.Text = CurrentUser;
 
             MainContent.Content = _dashboardView;
-
-            SearchBox.Text = "Search...";
-            SearchBox.Foreground = Brushes.Gray;
-        }
-        private void SearchBox_GotFocus(object sender, RoutedEventArgs e)
-        {
-            if (SearchBox.Text == "Search...")
-            {
-                SearchBox.Text = "";
-                SearchBox.Foreground = Brushes.Black;
-            }
-        }
-        private void SearchBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(SearchBox.Text))
-            {
-                SearchBox.Text = "Search...";
-                SearchBox.Foreground = Brushes.Gray;
-            }
         }
 
         private void UpdateDirectory(string page)
@@ -82,7 +68,8 @@ namespace sis_app
 
         private void NavigateAddOption3_Click(object sender, RoutedEventArgs e)
         {
-            // Implement logic for adding students here
+            _addStudentControl.LoadProgramCodes();
+            MainContent.Content = _addStudentControl;
             UpdateDirectory("Add/Student"); // Placeholder
         }
 

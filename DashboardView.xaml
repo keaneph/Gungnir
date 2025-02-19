@@ -5,8 +5,34 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Background="#EEF3F5">
-        <TextBlock Text="Welcome to Gungnir!" FontSize="32" FontWeight="Bold"
-                   VerticalAlignment="Center" HorizontalAlignment="Center"/>
+    <UserControl.Resources>
+        <!-- Color Palette -->
+        <SolidColorBrush x:Key="PrimaryColor" Color="#7160E8"/>
+        <SolidColorBrush x:Key="DarkGray" Color="#1F1F1F"/>
+        <SolidColorBrush x:Key="MediumLightGray" Color="#2E2E2E"/>
+        <SolidColorBrush x:Key="LightGray" Color="#383838"/>
+        <SolidColorBrush x:Key="White" Color="#D6D6D6"/>
+
+        <!-- Base Style for TextBlocks -->
+        <Style x:Key="DefaultTextBlockStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource White}"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Background="{StaticResource DarkGray}">
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBlock Text="Welcome to Gungnir!" 
+                      Style="{StaticResource DefaultTextBlockStyle}"
+                      FontSize="32" 
+                      FontWeight="Bold"
+                      HorizontalAlignment="Center"/>
+            <TextBlock Text="Student Information System"
+                      Style="{StaticResource DefaultTextBlockStyle}"
+                      FontSize="20"
+                      Margin="0,10,0,0"
+                      HorizontalAlignment="Center"/>
+        </StackPanel>
     </Grid>
 </UserControl>
