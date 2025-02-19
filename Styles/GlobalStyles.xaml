@@ -20,7 +20,6 @@
         <Setter Property="Width" Value="280"/>
         <Setter Property="Height" Value="30"/>
         <Setter Property="Margin" Value="0,5"/>
-        <!-- Removed bottom margin -->
         <Setter Property="FontSize" Value="12"/>
         <Setter Property="FontFamily" Value="Segoe UI"/>
         <Setter Property="Foreground" Value="{StaticResource White}"/>
@@ -35,7 +34,6 @@
         <Setter Property="Width" Value="280"/>
         <Setter Property="Height" Value="30"/>
         <Setter Property="Margin" Value="0,5"/>
-        <!-- Removed bottom margin -->
         <Setter Property="FontSize" Value="12"/>
         <Setter Property="FontFamily" Value="Segoe UI"/>
         <Setter Property="Foreground" Value="{StaticResource White}"/>
@@ -177,75 +175,56 @@
         </Setter>
     </Style>
 
-    <!-- Sidebar Button Style -->
-    <Style x:Key="SidebarButtonStyle" TargetType="Button">
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="BorderBrush" Value="Transparent"/>
+    <!-- ListView Style -->
+    <Style x:Key="CustomListViewStyle" TargetType="ListView">
+        <Setter Property="Background" Value="{StaticResource MediumLightGray}"/>
         <Setter Property="Foreground" Value="{StaticResource White}"/>
-        <Setter Property="HorizontalContentAlignment" Value="Left"/>
-        <Setter Property="Padding" Value="10"/>
-        <Setter Property="FontSize" Value="16"/>
-        <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <Border Background="{TemplateBinding Background}"
-                            Padding="{TemplateBinding Padding}">
-                        <ContentPresenter/>
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="{StaticResource LightGray}"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+        <Setter Property="BorderBrush" Value="{StaticResource LightGray}"/>
+        <Setter Property="BorderThickness" Value="1"/>
     </Style>
 
-    <!-- Icon Button Style -->
-    <Style x:Key="IconButtonStyle" TargetType="Button">
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="BorderBrush" Value="Transparent"/>
+    <!-- GridViewColumn Header Style -->
+    <Style x:Key="HeaderStyle" TargetType="GridViewColumnHeader">
+        <Setter Property="Background" Value="{StaticResource DarkGray}"/>
         <Setter Property="Foreground" Value="{StaticResource White}"/>
-        <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        <Setter Property="Padding" Value="10"/>
-        <Setter Property="FontSize" Value="20"/>
-        <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <Border Background="{TemplateBinding Background}"
-                            Padding="{TemplateBinding Padding}">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="{StaticResource LightGray}"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+        <Setter Property="Height" Value="30"/>
+        <Setter Property="Padding" Value="5"/>
     </Style>
 
-    <!-- Expander Header Style -->
-    <Style x:Key="ExpanderHeaderStyle" TargetType="ToggleButton">
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="BorderBrush" Value="Transparent"/>
+    <!-- Delete Button Style (Red variant of AddButtonStyle) -->
+    <Style x:Key="DeleteButtonStyle" TargetType="Button" BasedOn="{StaticResource AddButtonStyle}">
+        <Setter Property="Background" Value="#E74C3C"/>
+    </Style>
+
+    <!-- Edit Mode Toggle Button Style (Green) -->
+    <Style x:Key="EditModeToggleStyle" TargetType="ToggleButton">
+        <Setter Property="Background" Value="#2E8B57"/>
         <Setter Property="Foreground" Value="{StaticResource White}"/>
-        <Setter Property="FontSize" Value="16"/>
-        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="BorderBrush" Value="{StaticResource LightGray}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="10,5"/>
+        <Setter Property="Height" Value="30"/>
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontSize" Value="12"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ToggleButton">
                     <Border Background="{TemplateBinding Background}"
-                            Padding="10">
-                        <ContentPresenter />
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center" 
+                                    VerticalAlignment="Center"
+                                    TextElement.Foreground="{StaticResource White}"
+                                    TextElement.FontFamily="{TemplateBinding FontFamily}"
+                                    TextElement.FontSize="{TemplateBinding FontSize}"/>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="{StaticResource LightGray}"/>
+                            <Setter Property="Background" Value="#1F6B42"/>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter Property="Background" Value="#1F6B42"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -253,28 +232,32 @@
         </Setter>
     </Style>
 
-    <!-- Custom Expander Style -->
-    <Style x:Key="CustomExpanderStyle" TargetType="Expander">
+    <!-- Clear Colleges Button Style (Red) -->
+    <Style x:Key="ClearButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="#E74C3C"/>
+        <Setter Property="Foreground" Value="{StaticResource White}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource LightGray}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="10,5"/>
+        <Setter Property="Height" Value="30"/>
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontSize" Value="12"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="Expander">
-                    <Border Background="{TemplateBinding Background}" 
-                            BorderBrush="{TemplateBinding BorderBrush}" 
-                            BorderThickness="{TemplateBinding BorderThickness}">
-                        <StackPanel>
-                            <ToggleButton x:Name="HeaderSite" 
-                                        Focusable="False"
-                                        IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
-                                        Content="{TemplateBinding Header}"
-                                        Style="{StaticResource ExpanderHeaderStyle}"/>
-                            <ContentPresenter x:Name="ExpandSite" 
-                                            Visibility="Collapsed" 
-                                            ContentSource="Content"/>
-                        </StackPanel>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center" 
+                                    VerticalAlignment="Center"
+                                    TextElement.Foreground="{StaticResource White}"
+                                    TextElement.FontFamily="{TemplateBinding FontFamily}"
+                                    TextElement.FontSize="{TemplateBinding FontSize}"/>
                     </Border>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="IsExpanded" Value="True">
-                            <Setter TargetName="ExpandSite" Property="Visibility" Value="Visible"/>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#C0392B"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -282,23 +265,37 @@
         </Setter>
     </Style>
 
-    <!-- Expander Arrow Style -->
-    <Style x:Key="ExpanderArrowStyle" TargetType="TextBlock">
-        <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
-        <Setter Property="RenderTransform">
+    <!-- Delete Selected Button Style (Orange) -->
+    <Style x:Key="DeleteSelectedStyle" TargetType="Button">
+        <Setter Property="Background" Value="#E67E22"/>
+        <Setter Property="Foreground" Value="{StaticResource White}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource LightGray}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="10,5"/>
+        <Setter Property="Height" Value="30"/>
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Template">
             <Setter.Value>
-                <RotateTransform Angle="0"/>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center" 
+                                    VerticalAlignment="Center"
+                                    TextElement.Foreground="{StaticResource White}"
+                                    TextElement.FontFamily="{TemplateBinding FontFamily}"
+                                    TextElement.FontSize="{TemplateBinding FontSize}"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#D35400"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
             </Setter.Value>
         </Setter>
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding IsExpanded, RelativeSource={RelativeSource AncestorType=Expander}}" Value="True">
-                <Setter Property="RenderTransform">
-                    <Setter.Value>
-                        <RotateTransform Angle="180"/>
-                    </Setter.Value>
-                </Setter>
-            </DataTrigger>
-        </Style.Triggers>
     </Style>
 
 </ResourceDictionary>
