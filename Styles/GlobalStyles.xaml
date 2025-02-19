@@ -19,7 +19,8 @@
     <Style x:Key="BaseInputStyle" TargetType="TextBox">
         <Setter Property="Width" Value="280"/>
         <Setter Property="Height" Value="30"/>
-        <Setter Property="Margin" Value="0,5,0,15"/>
+        <Setter Property="Margin" Value="0,5"/>
+        <!-- Removed bottom margin -->
         <Setter Property="FontSize" Value="12"/>
         <Setter Property="FontFamily" Value="Segoe UI"/>
         <Setter Property="Foreground" Value="{StaticResource White}"/>
@@ -33,7 +34,8 @@
     <Style x:Key="BaseComboBoxStyle" TargetType="ComboBox">
         <Setter Property="Width" Value="280"/>
         <Setter Property="Height" Value="30"/>
-        <Setter Property="Margin" Value="0,5,0,15"/>
+        <Setter Property="Margin" Value="0,5"/>
+        <!-- Removed bottom margin -->
         <Setter Property="FontSize" Value="12"/>
         <Setter Property="FontFamily" Value="Segoe UI"/>
         <Setter Property="Foreground" Value="{StaticResource White}"/>

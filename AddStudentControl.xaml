@@ -3,185 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             mc:Ignorable="d" d:DesignWidth="600" Height="480">
-    <UserControl.Resources>
-        <!-- Color Palette -->
-        <SolidColorBrush x:Key="PrimaryColor" Color="#7160E8"/>
-        <SolidColorBrush x:Key="DarkGray" Color="#1F1F1F"/>
-        <SolidColorBrush x:Key="MediumLightGray" Color="#2E2E2E"/>
-        <SolidColorBrush x:Key="LightGray" Color="#383838"/>
-        <SolidColorBrush x:Key="White" Color="#D6D6D6"/>
-
-        <!-- Base Style for TextBlocks -->
-        <Style x:Key="DefaultTextBlockStyle" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="FontFamily" Value="Segoe UI"/>
-            <Setter Property="FontSize" Value="14"/>
-        </Style>
-
-        <!-- Input Field Styles (TextBox) -->
-        <Style x:Key="BaseInputStyle" TargetType="TextBox">
-            <!-- Remove duplicate Height setter -->
-            <Setter Property="Height" Value="30"/>
-            <Setter Property="Width" Value="280"/>
-            <Setter Property="Margin" Value="0,5"/>
-            <Setter Property="FontSize" Value="12"/>
-            <Setter Property="FontFamily" Value="Segoe UI"/>
-            <Setter Property="Foreground" Value="{StaticResource White}"/>
-            <Setter Property="Background" Value="{StaticResource MediumLightGray}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource LightGray}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="10,5"/>
-        </Style>
-
-
-
-        <!-- ComboBox Style -->
-        <Style x:Key="BaseComboBoxStyle" TargetType="ComboBox">
-            <Setter Property="Width" Value="280"/>
-            <Setter Property="Height" Value="30"/>
-            <Setter Property="Margin" Value="0,5"/>
-            <Setter Property="FontSize" Value="12"/>
-            <Setter Property="FontFamily" Value="Segoe UI"/>
-            <Setter Property="Foreground" Value="{StaticResource White}"/>
-            <Setter Property="Background" Value="{StaticResource MediumLightGray}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource LightGray}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="10,5"/>
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
-            <Setter Property="MaxDropDownHeight" Value="80"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ComboBox">
-                        <Grid>
-                            <ToggleButton x:Name="ToggleButton"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                Background="{TemplateBinding Background}"
-                                IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                Padding="{TemplateBinding Padding}">
-                                <ToggleButton.Template>
-                                    <ControlTemplate TargetType="ToggleButton">
-                                        <Border x:Name="Border" 
-                                        Background="{TemplateBinding Background}"
-                                        BorderBrush="{TemplateBinding BorderBrush}"
-                                        BorderThickness="1">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <ContentPresenter Grid.Column="0"
-                                                        Margin="5,0,0,0"
-                                                        VerticalAlignment="Center"/>
-                                                <Path x:Name="Arrow"
-                                              Grid.Column="1"
-                                              Fill="{StaticResource White}"
-                                              HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"
-                                              Data="M0,0 L8,0 L4,4 Z"
-                                              Margin="0,0,5,0"/>
-                                            </Grid>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="{StaticResource LightGray}"
-                                                TargetName="Border"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </ToggleButton.Template>
-                            </ToggleButton>
-                            <ContentPresenter
-                        Content="{TemplateBinding SelectionBoxItem}"
-                        ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
-                        ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Left"
-                        Margin="12,0,0,0"/>
-                            <Popup x:Name="Popup"
-                           AllowsTransparency="True"
-                           IsOpen="{TemplateBinding IsDropDownOpen}"
-                           Placement="Bottom"
-                           PopupAnimation="Slide">
-                                <Grid x:Name="DropDown"
-                              Background="{StaticResource MediumLightGray}"
-                              MinWidth="{TemplateBinding ActualWidth}"
-                              MaxHeight="{TemplateBinding MaxDropDownHeight}">
-                                    <Border x:Name="DropDownBorder"
-                                    BorderBrush="{StaticResource LightGray}"
-                                    BorderThickness="1"/>
-                                    <ScrollViewer VerticalScrollBarVisibility="Auto">
-                                        <ScrollViewer.Resources>
-                                            <Style TargetType="ScrollBar">
-                                                <Setter Property="Background" Value="{StaticResource MediumLightGray}"/>
-                                                <Setter Property="Foreground" Value="{StaticResource White}"/>
-                                            </Style>
-                                        </ScrollViewer.Resources>
-                                        <StackPanel IsItemsHost="True"/>
-                                    </ScrollViewer>
-                                </Grid>
-                            </Popup>
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <!-- ComboBoxItem Style -->
-            <Style.Resources>
-                <Style TargetType="ComboBoxItem">
-                    <Setter Property="Foreground" Value="{StaticResource White}"/>
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="ComboBoxItem">
-                                <Border x:Name="Border"
-                                Padding="5"
-                                Background="Transparent">
-                                    <ContentPresenter/>
-                                </Border>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="{StaticResource LightGray}"
-                                        TargetName="Border"/>
-                                    </Trigger>
-                                    <Trigger Property="IsSelected" Value="True">
-                                        <Setter Property="Background" Value="{StaticResource PrimaryColor}"
-                                        TargetName="Border"/>
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </Style.Resources>
-        </Style>
-
-        <!-- Button Style -->
-        <Style x:Key="AddButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="{StaticResource PrimaryColor}"/>
-            <Setter Property="Foreground" Value="{StaticResource White}"/>
-            <Setter Property="FontSize" Value="12"/>
-            <Setter Property="Padding" Value="8,3"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="BorderBrush" Value="{StaticResource LightGray}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#333333"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </UserControl.Resources>
+             mc:Ignorable="d" 
+             d:DesignWidth="600" 
+             Height="480">
 
     <Grid>
         <Border HorizontalAlignment="Center" 
@@ -223,7 +47,7 @@
                               VerticalAlignment="Center"/>
                     <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
                         <TextBox x:Name="YearTextBox" 
-                                 Margin="35,0,0,0"
+                                Margin="35,0,0,0"
                                 Width="130"
                                 Style="{StaticResource BaseInputStyle}"
                                 PreviewTextInput="YearTextBox_PreviewTextInput"/>
@@ -305,14 +129,14 @@
 
                     <!-- Add Button -->
                     <Button Grid.Row="7" Grid.Column="1"
-                    Content="Add Student"
-                    x:Name="AddStudentButton"
-                    Style="{StaticResource AddButtonStyle}"
-                    Click="AddStudentButton_Click"
-                    Width="100" 
-                    Height="25"
-                    HorizontalAlignment="Right"
-                    Margin="0,20,35,0"/>    
+                            Content="Add Student"
+                            x:Name="AddStudentButton"
+                            Style="{StaticResource AddButtonStyle}"
+                            Click="AddStudentButton_Click"
+                            Width="100" 
+                            Height="25"
+                            HorizontalAlignment="Right"
+                            Margin="0,20,35,0"/>
                 </Grid>
             </StackPanel>
         </Border>
