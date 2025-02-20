@@ -21,6 +21,8 @@ namespace glaive
             _collegeDataService = collegeDataService;
             _colleges = new ObservableCollection<College>(_collegeDataService.GetAllColleges()); // Initialize
             CollegeListView.ItemsSource = _colleges;
+
+            SortComboBox.SelectedIndex = 0;
         }
 
         public void LoadColleges()
@@ -113,6 +115,9 @@ namespace glaive
 
                 switch (sortOption)
                 {
+                    case "Date and Time Modified (Oldest First)":
+                        SortList(c => c.DateTime, ListSortDirection.Ascending);
+                        break;
                     case "Date and Time Modified (Newest First)":
                         SortList(c => c.DateTime, ListSortDirection.Descending);
                         break;
@@ -147,6 +152,11 @@ namespace glaive
                 _colleges.Add(item);
             }
             CollegeListView.Items.Refresh();
+        }
+
+        private void CollegeListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
         }
     }
 }

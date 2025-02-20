@@ -6,35 +6,28 @@
              xmlns:local="clr-namespace:glaive"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-
     <Grid>
         <Border HorizontalAlignment="Center" 
                 VerticalAlignment="Center"
                 Width="600" 
                 CornerRadius="15" 
-                Padding="0,10,0,15" 
-                Opacity="0.95">
-
+                Padding="0,10,0,15">
+            
             <Grid Margin="20">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-
-                <!-- Top Panel -->
-                <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
-                    <ToggleButton x:Name="EditModeToggleButton" 
-                                Content="Enable Edit Mode" 
-                                Style="{StaticResource EditModeToggleStyle}"
-                                Checked="EditModeToggleButton_Checked" 
-                                Unchecked="EditModeToggleButton_Unchecked"/>
-
+                
+                <!-- top panel -->
+                <StackPanel Orientation="Horizontal" Grid.Row="0">
                     <ComboBox x:Name="SortComboBox" 
-                             Width="200" 
-                             Margin="10,0,0,0" 
-                             Style="{StaticResource BaseComboBoxStyle}"
-                             SelectionChanged="SortComboBox_SelectionChanged">
+                          Width="235" 
+                          Margin="0,10" 
+                          Style="{StaticResource SortComboBoxStyle}"
+                          SelectionChanged="SortComboBox_SelectionChanged">
+                        <ComboBoxItem Content="Date and Time Modified (Oldest First)"/>
                         <ComboBoxItem Content="Date and Time Modified (Newest First)"/>
                         <ComboBoxItem Content="Alphabetical College Name"/>
                         <ComboBoxItem Content="Alphabetical College Code"/>
@@ -42,24 +35,24 @@
                     </ComboBox>
                 </StackPanel>
 
-                <!-- ListView -->
+                <!-- listview (or da table) -->
                 <ListView x:Name="CollegeListView" 
-                         Grid.Row="1" 
-                         Margin="0,10" 
-                         SelectionMode="Multiple"
-                         Style="{StaticResource CustomListViewStyle}">
+                          Grid.Row="1" 
+                          Margin="0,10"                         
+                          SelectionMode="Multiple"
+                          Style="{StaticResource CustomListViewStyle}" SelectionChanged="CollegeListView_SelectionChanged">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Header="College Name" Width="200">
+                            <GridViewColumn Header="College Name" Width="200" >
                                 <GridViewColumn.HeaderContainerStyle>
                                     <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource HeaderStyle}"/>
                                 </GridViewColumn.HeaderContainerStyle>
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
-                                                IsEnabled="{Binding ElementName=EditModeToggleButton, Path=IsChecked}"
-                                                Style="{StaticResource BaseInputStyle}"
-                                                Width="180"/>
+                                                 IsEnabled="{Binding ElementName=EditModeToggleButton, Path=IsChecked}"
+                                                 Style="{StaticResource TableCellTextBoxStyle}"
+                                                 Width="{Binding Width, RelativeSource={RelativeSource AncestorType=GridViewColumn}}"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
@@ -71,9 +64,9 @@
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBox Text="{Binding Code, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
-                                                IsEnabled="{Binding ElementName=EditModeToggleButton, Path=IsChecked}"
-                                                Style="{StaticResource BaseInputStyle}"
-                                                Width="80"/>
+                                                 IsEnabled="{Binding ElementName=EditModeToggleButton, Path=IsChecked}"
+                                                 Style="{StaticResource TableCellTextBoxStyle}"
+                                                 Width="{Binding Width, RelativeSource={RelativeSource AncestorType=GridViewColumn}}"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
@@ -85,7 +78,8 @@
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding DateTime}" 
-                                                 Style="{StaticResource DefaultTextBlockStyle}"/>
+                                                   Style="{StaticResource TableCellStyle}"
+                                                   Width="{Binding Width, RelativeSource={RelativeSource AncestorType=GridViewColumn}}"/>        
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
@@ -97,60 +91,43 @@
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding User}" 
-                                                 Style="{StaticResource DefaultTextBlockStyle}"/>
+                                                   Style="{StaticResource TableCellStyle}"
+                                                   Width="100"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
                         </GridView>
                     </ListView.View>
+                    </ListView>
 
-                    <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem">
-                            <Setter Property="Height" Value="40"/>
-                            <Setter Property="Padding" Value="5"/>
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                            <Setter Property="VerticalContentAlignment" Value="Center"/>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="ListViewItem">
-                                        <Border x:Name="Border"
-                                                Background="{TemplateBinding Background}"
-                                                BorderBrush="{TemplateBinding BorderBrush}"
-                                                BorderThickness="{TemplateBinding BorderThickness}"
-                                                Padding="{TemplateBinding Padding}">
-                                            <GridViewRowPresenter />
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="{StaticResource LightGray}" TargetName="Border"/>
-                                            </Trigger>
-                                            <Trigger Property="IsSelected" Value="True">
-                                                <Setter Property="Background" Value="{StaticResource MediumLightGray}" TargetName="Border"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </ListView.ItemContainerStyle>
-                </ListView>
+                    <!-- bottom Panel -->
+                <Grid Grid.Row="2" Margin="0,10" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-                <!-- Bottom Panel -->
-                <StackPanel Orientation="Horizontal" 
-                          Grid.Row="2" 
-                          Margin="0,10,0,0">
-                    <Button Content="Clear Colleges" 
-                            x:Name="ClearCollegesButton" 
-                            Click="ClearCollegesButton_Click"
-                            Style="{StaticResource ClearButtonStyle}"/>
+                    <!-- left-aligned buttons -->
+                    <StackPanel Orientation="Horizontal" Grid.Column="0" HorizontalAlignment="Left">
+                        <Button Content="Clear Colleges" 
+                                x:Name="ClearCollegesButton" 
+                                Click="ClearCollegesButton_Click"
+                                Style="{StaticResource ClearButtonStyle}"/>
+                        <Button Content="Delete Selected" 
+                                x:Name="DeleteSelectedButton" 
+                                Click="DeleteSelectedButton_Click"
+                                Margin="10,0,0,0"
+                                Style="{StaticResource DeleteSelectedStyle}"/>
 
-                    <Button Content="Delete Selected" 
-                            x:Name="DeleteSelectedButton" 
-                            Click="DeleteSelectedButton_Click"
-                            Style="{StaticResource DeleteSelectedStyle}"
-                            Margin="10,0,0,0"/>
-                </StackPanel>
+                    </StackPanel>
+                    <!-- right-aligned button -->
+                    <ToggleButton Grid.Column="1"
+                                  x:Name="EditModeToggleButton" 
+                                  Content="Enable Edit Mode" 
+                                  Style="{StaticResource EditModeToggleStyle}"
+                                  Checked="EditModeToggleButton_Checked" 
+                                  Unchecked="EditModeToggleButton_Unchecked"/>
+                </Grid>
             </Grid>
         </Border>
     </Grid>
