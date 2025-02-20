@@ -1,16 +1,28 @@
 ﻿using sis_app;
 using System.Collections.ObjectModel;
-
+using System.Windows;
+using System.IO;
 public class HistoryService
 {
     private readonly string _filePath = "history.csv";
     private ObservableCollection<HistoryEntry> _history;
 
-    public HistoryService()
+    // Keep the original event declaration
+    public event EventHandler<HistoryEntry> NewEntryAdded;
+
+    public HistoryService(bool clearExistingHistory = false) // Add this parameter
     {
         _history = new ObservableCollection<HistoryEntry>();
+
+        // Clear existing history if requested
+        if (clearExistingHistory && File.Exists(_filePath))
+        {
+            File.Delete(_filePath);
+        }
+
         LoadHistory();
     }
+
 
     private void LoadHistory()
     {
@@ -42,10 +54,12 @@ public class HistoryService
         try
         {
             File.AppendAllText(_filePath, entry.ToString() + Environment.NewLine);
+            // Pass the entry directly
+            NewEntryAdded?.Invoke(this, entry);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error saving history: {ex.Message}");
+            MessageBox.Show($"Error saving history: {ex.Message}", "Error");
         }
     }
 

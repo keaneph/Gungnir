@@ -1,18 +1,22 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Collections.Generic; // For List<T>
-using System.Linq; // For LINQ
+using System.Collections.Generic;
+using System.Linq;
 
 namespace glaive
 {
     public partial class AddProgramControl : UserControl
     {
-        private ProgramDataService _programDataService; // New data service
+        private ProgramDataService _programDataService;
         private CollegeDataService _collegeDataService;
 
-        public AddProgramControl(ProgramDataService programDataService, CollegeDataService collegeDataService)  // Inject both services
+        // Add event for history tracking
+        public event EventHandler<ProgramEventArgs> ProgramAdded;
+
+        public AddProgramControl(ProgramDataService programDataService, CollegeDataService collegeDataService)
         {
             InitializeComponent();
             _programDataService = programDataService;
@@ -22,56 +26,138 @@ namespace glaive
 
         public void LoadCollegeCodes()
         {
-            List<string> collegeCodes = _collegeDataService.GetAllColleges().Select(c => c.Code).ToList();
-            CollegeCodeComboBox.ItemsSource = collegeCodes;
-        }
+            try
+            {
+                List<string> collegeCodes = _collegeDataService.GetAllColleges()
+                    .OrderBy(c => c.Code)
+                    .Select(c => c.Code)
+                    .ToList();
 
+                CollegeCodeComboBox.ItemsSource = collegeCodes;
+
+                if (collegeCodes.Count == 0)
+                {
+                    MessageBox.Show("No colleges found. Please add a college first.", "Information",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading college codes: {ex.Message}", "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
 
         private void AddProgramButton_Click(object sender, RoutedEventArgs e)
         {
-            // ... (Similar validation logic as AddCollegeButton_Click) ...
-            if (!string.IsNullOrEmpty(ProgramNameTextBox.Text) &&
-               !string.IsNullOrEmpty(ProgramCodeTextBox.Text) &&
-               CollegeCodeComboBox.SelectedItem != null) // Check if college code selected
+            if (ValidateInput())
             {
-                Program newProgram = new Program
+                try
                 {
-                    Name = ProgramNameTextBox.Text,
-                    Code = ProgramCodeTextBox.Text,
-                    CollegeCode = CollegeCodeComboBox.SelectedItem.ToString(), // Get selected college code
-                    DateTime = DateTime.Now,
-                    User = _programDataService.CurrentUser //_collegeDataService.CurrentUser should be handled in a common logic / injection
-                };
+                    Program newProgram = new Program
+                    {
+                        Name = ProgramNameTextBox.Text.Trim(),
+                        Code = ProgramCodeTextBox.Text.Trim(),
+                        CollegeCode = CollegeCodeComboBox.SelectedItem.ToString(),
+                        DateTime = DateTime.Now,
+                        User = _programDataService.CurrentUser
+                    };
 
+                    // Check for duplicate program code
+                    var existingPrograms = _programDataService.GetAllPrograms();
+                    if (existingPrograms.Exists(p => p.Code.Equals(newProgram.Code, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        MessageBox.Show($"A program with code '{newProgram.Code}' already exists.", "Error",
+                            MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
 
-                _programDataService.AddProgram(newProgram);
+                    _programDataService.AddProgram(newProgram);
 
-                MessageBox.Show($"Added college {newProgram.Name} ({newProgram.Code})", "Success");
+                    // Raise event for history tracking
+                    ProgramAdded?.Invoke(this, new ProgramEventArgs(newProgram));
 
-                ProgramNameTextBox.Text = "";
-                ProgramCodeTextBox.Text = "";
+                    MessageBox.Show($"Added program {newProgram.Name} ({newProgram.Code})", "Success",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    ClearFields();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error adding program: {ex.Message}", "Error",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
-            else
+        }
+
+        private bool ValidateInput()
+        {
+            if (string.IsNullOrWhiteSpace(ProgramNameTextBox.Text))
             {
-                MessageBox.Show("Please enter Program Name, Code and College Code.", "Error");
+                MessageBox.Show("Please enter a program name.", "Validation Error",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                ProgramNameTextBox.Focus();
+                return false;
             }
+
+            if (string.IsNullOrWhiteSpace(ProgramCodeTextBox.Text))
+            {
+                MessageBox.Show("Please enter a program code.", "Validation Error",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                ProgramCodeTextBox.Focus();
+                return false;
+            }
+
+            if (ProgramCodeTextBox.Text.Length < 2 || ProgramCodeTextBox.Text.Length > 5)
+            {
+                MessageBox.Show("Program code must be between 2 and 5 characters.", "Validation Error",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                ProgramCodeTextBox.Focus();
+                return false;
+            }
+
+            if (CollegeCodeComboBox.SelectedItem == null)
+            {
+                MessageBox.Show("Please select a college code.", "Validation Error",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                CollegeCodeComboBox.Focus();
+                return false;
+            }
+
+            return true;
+        }
+
+        private void ClearFields()
+        {
+            ProgramNameTextBox.Text = "";
+            ProgramCodeTextBox.Text = "";
+            CollegeCodeComboBox.SelectedIndex = -1;
         }
 
         private void ProgramNameTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            Regex regex = new Regex("[^a-zA-Z]+");
+            // Allow letters and spaces
+            Regex regex = new Regex("[^a-zA-Z ]+");
             e.Handled = regex.IsMatch(e.Text);
         }
 
         private void ProgramCodeTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
+            // Allow only letters
             Regex regex = new Regex("[^a-zA-Z]+");
             e.Handled = regex.IsMatch(e.Text);
         }
 
         private void ProgramCodeTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-
+            // Convert to uppercase
+            if (sender is TextBox textBox)
+            {
+                int caretIndex = textBox.CaretIndex;
+                textBox.Text = textBox.Text.ToUpper();
+                textBox.CaretIndex = caretIndex;
+            }
         }
     }
+
 }

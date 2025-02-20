@@ -435,7 +435,11 @@
                     </Border>
                     <!-- Real-Time Updates Box -->
                     <Border BorderBrush="{StaticResource LightGray}" BorderThickness="1" Height="314" Padding="10">
-                        <TextBlock Text="Real-time updates will appear here..." Style="{StaticResource DefaultTextBlockStyle}" TextWrapping="Wrap"/>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <TextBlock x:Name="RealTimeUpdates" 
+                                       Style="{StaticResource DefaultTextBlockStyle}" 
+                                       TextWrapping="Wrap"/>
+                        </ScrollViewer>
                     </Border>
                 </StackPanel>
             </Border>

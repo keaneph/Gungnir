@@ -3,6 +3,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Diagnostics;
+using System.Text;
+using System.Linq;
 using glaive;
 
 namespace sis_app
@@ -34,7 +36,7 @@ namespace sis_app
             CurrentUser = username;
 
             // Initialize Services
-            _historyService = new HistoryService();
+            _historyService = new HistoryService(clearExistingHistory: true);
             _collegeDataService = new CollegeDataService("colleges.csv") { CurrentUser = CurrentUser };
             _programDataService = new ProgramDataService("programs.csv") { CurrentUser = CurrentUser };
             _studentDataService = new StudentDataService("students.csv") { CurrentUser = CurrentUser };
@@ -49,6 +51,9 @@ namespace sis_app
             LoginStatus.Text = CurrentUser;
             ProfileName.Text = CurrentUser;
             MainContent.Content = _dashboardView;
+
+            // Load existing history
+            LoadExistingHistory();
 
             // Log application start
             _historyService.AddEntry(CurrentUser, "Application Start", "User logged in");
@@ -66,6 +71,43 @@ namespace sis_app
             _viewCollegesControl = new ViewCollegesControl(_collegeDataService);
             _viewProgramsControl = new ViewProgramsControl(_programDataService);
             _viewStudentControl = new ViewStudentControl(_studentDataService);
+
+            // Subscribe to new history entries
+            _historyService.NewEntryAdded += HistoryService_NewEntryAdded;
+        }
+
+        private void HistoryService_NewEntryAdded(object sender, HistoryEntry entry)
+        {
+            // Ensure we're on the UI thread
+            Dispatcher.Invoke(() =>
+            {
+                string newEntry = $"[{entry.Timestamp:HH:mm:ss}] {entry.User}: {entry.Action} - {entry.Details}\n";
+
+                // Prepend the new entry (most recent at top)
+                RealTimeUpdates.Text = newEntry + RealTimeUpdates.Text;
+
+                // Limit the number of displayed entries
+                const int maxLines = 50;
+                var lines = RealTimeUpdates.Text.Split('\n');
+                if (lines.Length > maxLines)
+                {
+                    RealTimeUpdates.Text = string.Join("\n", lines.Take(maxLines));
+                }
+            });
+        }
+
+        private void LoadExistingHistory()
+        {
+            var recentEntries = _historyService.GetHistory()
+                .OrderByDescending(h => h.Timestamp)
+                .Take(20); // Show last 20 entries
+
+            StringBuilder sb = new StringBuilder();
+            foreach (var entry in recentEntries)
+            {
+                sb.Insert(0, $"[{entry.Timestamp:HH:mm:ss}] {entry.User}: {entry.Action} - {entry.Details}\n");
+            }
+            RealTimeUpdates.Text = sb.ToString();
         }
 
         private void SetupEventHandlers()
@@ -113,7 +155,10 @@ namespace sis_app
         private void UpdateDirectory(string page)
         {
             DirectoryText.Text = $" | /{page}";
-            _historyService.AddEntry(CurrentUser, "Navigation", $"Navigated to {page}");
+            // Remove "Navigation" and just pass the navigation details
+            _historyService.AddEntry(CurrentUser, page, $"Navigated to {page}");
+            // Or if you prefer just the destination without "Navigated to":
+            // _historyService.AddEntry(CurrentUser, page, page);
         }
 
         // Navigation Event Handlers
