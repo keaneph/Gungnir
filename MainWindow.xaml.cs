@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Diagnostics;
 using glaive;
 
 namespace sis_app
@@ -10,15 +11,19 @@ namespace sis_app
     {
         private CollegeDataService _collegeDataService;
         private ProgramDataService _programDataService;
+        private StudentDataService _studentDataService;
+        private HistoryService _historyService;
+
         private AddCollegeControl _addCollegeControl;
         private AddProgramControl _addProgramControl;
+        private AddStudentControl _addStudentControl;
+
         private ViewCollegesControl _viewCollegesControl;
         private ViewProgramsControl _viewProgramsControl;
-        private DashboardView _dashboardView;
-        private StudentDataService _studentDataService;
-        private AddStudentControl _addStudentControl;
         private ViewStudentControl _viewStudentControl;
 
+        private DashboardView _dashboardView;
+        private AboutView _aboutView;
 
         public string CurrentUser { get; set; } = "Admin";
 
@@ -26,32 +31,92 @@ namespace sis_app
         {
             InitializeComponent();
 
-            CurrentUser = username; // Set the current user from login
+            CurrentUser = username;
 
+            // Initialize Services
+            _historyService = new HistoryService();
             _collegeDataService = new CollegeDataService("colleges.csv") { CurrentUser = CurrentUser };
             _programDataService = new ProgramDataService("programs.csv") { CurrentUser = CurrentUser };
+            _studentDataService = new StudentDataService("students.csv") { CurrentUser = CurrentUser };
+
+            // Initialize Views
+            InitializeViews();
+
+            // Set up event handlers for tracking
+            SetupEventHandlers();
+
+            // Initialize UI
+            LoginStatus.Text = CurrentUser;
+            ProfileName.Text = CurrentUser;
+            MainContent.Content = _dashboardView;
+
+            // Log application start
+            _historyService.AddEntry(CurrentUser, "Application Start", "User logged in");
+        }
+
+        private void InitializeViews()
+        {
+            _dashboardView = new DashboardView();
+            _aboutView = new AboutView();
 
             _addCollegeControl = new AddCollegeControl(_collegeDataService);
             _addProgramControl = new AddProgramControl(_programDataService, _collegeDataService);
+            _addStudentControl = new AddStudentControl(_studentDataService, _collegeDataService, _programDataService);
+
             _viewCollegesControl = new ViewCollegesControl(_collegeDataService);
             _viewProgramsControl = new ViewProgramsControl(_programDataService);
-            _dashboardView = new DashboardView();
-            _studentDataService = new StudentDataService("students.csv") { CurrentUser = CurrentUser };
-            _addStudentControl = new AddStudentControl(_studentDataService, _collegeDataService, _programDataService);
             _viewStudentControl = new ViewStudentControl(_studentDataService);
+        }
 
-            _addStudentControl.StudentAdded += (s, e) => _viewStudentControl.LoadStudents();
+        private void SetupEventHandlers()
+        {
+            // Add College events
+            _addCollegeControl.CollegeAdded += (s, e) =>
+                _historyService.AddEntry(CurrentUser, "Added College", $"Added college: {e.College.Name} ({e.College.Code})");
 
-            LoginStatus.Text = CurrentUser;
-            ProfileName.Text = CurrentUser;
+            // Add Program events
+            _addProgramControl.ProgramAdded += (s, e) =>
+                _historyService.AddEntry(CurrentUser, "Added Program", $"Added program: {e.Program.Name} ({e.Program.Code})");
 
-            MainContent.Content = _dashboardView;
+            // Add Student events
+            _addStudentControl.StudentAdded += (s, e) =>
+            {
+                _historyService.AddEntry(CurrentUser, "Added Student", $"Added student: {e.Student.FirstName} {e.Student.LastName}");
+                _viewStudentControl.LoadStudents();
+            };
+
+            // View College events
+            _viewCollegesControl.CollegeDeleted += (s, e) =>
+                _historyService.AddEntry(CurrentUser, "Deleted College", $"Deleted college: {e.College.Name}");
+            _viewCollegesControl.CollegeUpdated += (s, e) =>
+                _historyService.AddEntry(CurrentUser, "Updated College", $"Updated college: {e.College.Name}");
+            _viewCollegesControl.CollegesCleared += (s, e) =>
+                _historyService.AddEntry(CurrentUser, "Cleared Colleges", "All college data cleared");
+
+            // View Program events
+            _viewProgramsControl.ProgramDeleted += (s, e) =>
+                _historyService.AddEntry(CurrentUser, "Deleted Program", $"Deleted program: {e.Program.Name}");
+            _viewProgramsControl.ProgramUpdated += (s, e) =>
+                _historyService.AddEntry(CurrentUser, "Updated Program", $"Updated program: {e.Program.Name}");
+            _viewProgramsControl.ProgramsCleared += (s, e) =>
+                _historyService.AddEntry(CurrentUser, "Cleared Programs", "All program data cleared");
+
+            // View Student events
+            _viewStudentControl.StudentDeleted += (s, e) =>
+                _historyService.AddEntry(CurrentUser, "Deleted Student", $"Deleted student: {e.Student.FirstName} {e.Student.LastName}");
+            _viewStudentControl.StudentUpdated += (s, e) =>
+                _historyService.AddEntry(CurrentUser, "Updated Student", $"Updated student: {e.Student.FirstName} {e.Student.LastName}");
+            _viewStudentControl.StudentsCleared += (s, e) =>
+                _historyService.AddEntry(CurrentUser, "Cleared Students", "All student data cleared");
         }
 
         private void UpdateDirectory(string page)
         {
             DirectoryText.Text = $" | /{page}";
+            _historyService.AddEntry(CurrentUser, "Navigation", $"Navigated to {page}");
         }
+
+        // Navigation Event Handlers
         private void NavigateHome_Click(object sender, RoutedEventArgs e)
         {
             MainContent.Content = _dashboardView;
@@ -66,7 +131,7 @@ namespace sis_app
 
         private void NavigateAddOption2_Click(object sender, RoutedEventArgs e)
         {
-            _addProgramControl.LoadCollegeCodes(); // Refresh college codes in the dropdown
+            _addProgramControl.LoadCollegeCodes();
             MainContent.Content = _addProgramControl;
             UpdateDirectory("Add/Program");
         }
@@ -75,7 +140,7 @@ namespace sis_app
         {
             _addStudentControl.LoadProgramCodes();
             MainContent.Content = _addStudentControl;
-            UpdateDirectory("Add/Student"); // Placeholder
+            UpdateDirectory("Add/Student");
         }
 
         private void NavigateViewOption1_Click(object sender, RoutedEventArgs e)
@@ -85,12 +150,11 @@ namespace sis_app
             UpdateDirectory("View/Colleges");
         }
 
-
         private void NavigateViewOption2_Click(object sender, RoutedEventArgs e)
         {
-            _viewProgramsControl.LoadPrograms();  // Uncomment and implement when you create ViewProgramsControl
-            MainContent.Content = _viewProgramsControl; // Uncomment when you have ViewProgramsControl
-            UpdateDirectory("View/Programs"); // Placeholder for now
+            _viewProgramsControl.LoadPrograms();
+            MainContent.Content = _viewProgramsControl;
+            UpdateDirectory("View/Programs");
         }
 
         private void NavigateViewOption3_Click(object sender, RoutedEventArgs e)
@@ -100,16 +164,69 @@ namespace sis_app
             UpdateDirectory("View/Students");
         }
 
+        private void NavigateHistory_Click(object sender, RoutedEventArgs e)
+        {
+            var historyView = new HistoryView(_historyService);
+            MainContent.Content = historyView;
+            UpdateDirectory("History");
+        }
+
         private void NavigateAbout_Click(object sender, RoutedEventArgs e)
         {
-            MainContent.Content = new AboutView();
+            MainContent.Content = _aboutView;
             UpdateDirectory("About");
         }
 
-        private void NavigateHistory_Click(object sender, RoutedEventArgs e)
+        // Social Media Links
+        private void YouTube_Click(object sender, RoutedEventArgs e)
         {
-            // Implement logic for history page here
-            UpdateDirectory("History");
+            try
+            {
+                Process.Start(new ProcessStartInfo("https://www.youtube.com/your-channel")
+                { UseShellExecute = true });
+                _historyService.AddEntry(CurrentUser, "External Link", "Opened YouTube channel");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error opening YouTube: {ex.Message}", "Error");
+                _historyService.AddEntry(CurrentUser, "Error", "Failed to open YouTube channel");
+            }
+        }
+
+        private void GitHub_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo("https://github.com/your-username")
+                { UseShellExecute = true });
+                _historyService.AddEntry(CurrentUser, "External Link", "Opened GitHub profile");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error opening GitHub: {ex.Message}", "Error");
+                _historyService.AddEntry(CurrentUser, "Error", "Failed to open GitHub profile");
+            }
+        }
+
+        private void LinkedIn_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo("https://www.linkedin.com/in/your-profile")
+                { UseShellExecute = true });
+                _historyService.AddEntry(CurrentUser, "External Link", "Opened LinkedIn profile");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error opening LinkedIn: {ex.Message}", "Error");
+                _historyService.AddEntry(CurrentUser, "Error", "Failed to open LinkedIn profile");
+            }
+        }
+
+        private void Settings_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Settings functionality coming soon!", "Settings");
+            _historyService.AddEntry(CurrentUser, "Settings", "Attempted to access settings");
         }
     }
 }

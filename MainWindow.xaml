@@ -164,16 +164,28 @@
 
                 <!-- Right side buttons -->
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,10,0">
-                    <Button Style="{StaticResource IconButtonStyle}" ToolTip="YouTube" Padding="5">
+                    <Button Style="{StaticResource IconButtonStyle}" 
+            ToolTip="YouTube" 
+            Padding="5"
+            Click="YouTube_Click">
                         <TextBlock Text="▶" Style="{StaticResource DefaultTextBlockStyle}"/>
                     </Button>
-                    <Button Style="{StaticResource IconButtonStyle}" ToolTip="GitHub" Padding="5">
+                    <Button Style="{StaticResource IconButtonStyle}" 
+            ToolTip="GitHub" 
+            Padding="5"
+            Click="GitHub_Click">
                         <TextBlock Text="🐱" Style="{StaticResource DefaultTextBlockStyle}"/>
                     </Button>
-                    <Button Style="{StaticResource IconButtonStyle}" ToolTip="LinkedIn" Padding="5">
+                    <Button Style="{StaticResource IconButtonStyle}" 
+            ToolTip="LinkedIn" 
+            Padding="5"
+            Click="LinkedIn_Click">
                         <TextBlock Text="in" Style="{StaticResource DefaultTextBlockStyle}"/>
                     </Button>
-                    <Button Style="{StaticResource IconButtonStyle}" ToolTip="Settings" Padding="5">
+                    <Button Style="{StaticResource IconButtonStyle}" 
+            ToolTip="Settings" 
+            Padding="5"
+            Click="Settings_Click">
                         <TextBlock Text="⚙" Style="{StaticResource DefaultTextBlockStyle}"/>
                     </Button>
                 </StackPanel>
