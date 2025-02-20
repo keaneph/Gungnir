@@ -102,7 +102,7 @@ namespace sis_app
 
         private void NavigateAbout_Click(object sender, RoutedEventArgs e)
         {
-            MainContent.Content = new TextBlock { Text = "About This Application", FontSize = 20 };
+            MainContent.Content = new AboutView();
             UpdateDirectory("About");
         }
 
