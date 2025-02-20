@@ -11,18 +11,18 @@
 
   <ItemGroup>
     <None Remove="himalayas dark.jpg" />
-    <None Remove="Images\jujutsu.png" />
-    <None Remove="Images\wp3.jpg" />
-    <None Remove="Images\wp5.jpg" />
+    <None Remove="Resources\Images\jujutsu.png" />
+    <None Remove="Resources\Images\wp3.jpg" />
+    <None Remove="Resources\Images\wp5.jpg" />
     <None Remove="lamp posts.jpg" />
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Images\himalayas dark.jpg" />
-    <Resource Include="Images\jujutsu.png" />
-    <Resource Include="Images\lamp posts.jpg" />
-    <Resource Include="Images\wp3.jpg" />
-    <Resource Include="Images\wp5.jpg" />
+    <Resource Include="Resources\Images\himalayas dark.jpg" />
+    <Resource Include="Resources\Images\jujutsu.png" />
+    <Resource Include="Resources\Images\lamp posts.jpg" />
+    <Resource Include="Resources\Images\wp3.jpg" />
+    <Resource Include="Resources\Images\wp5.jpg" />
   </ItemGroup>
 
 </Project>

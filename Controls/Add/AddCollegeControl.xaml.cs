@@ -2,8 +2,10 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using sis_app.Models;
+using sis_app.Services; 
 
-namespace glaive
+namespace sis_app.Controls.Add
 {
     public partial class AddCollegeControl : UserControl
     {

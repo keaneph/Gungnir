@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace glaive
+namespace sis_app.Views
 {
     public partial class DashboardView : UserControl
     {

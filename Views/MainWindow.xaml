@@ -1,6 +1,9 @@
-﻿<Window x:Class="sis_app.MainWindow"
+﻿<Window x:Class="sis_app.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:sis_app.Views"
+        xmlns:controls="clr-namespace:sis_app.Controls.Add"
+        xmlns:viewControls="clr-namespace:sis_app.Controls.View"
         Title="Gungnir - Home" Height="600" Width="1100"
         ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Window.Resources>
@@ -142,7 +145,7 @@
     <Grid>
 
         <Grid.Background>
-            <ImageBrush ImageSource="/Images/jujutsu.png"
+            <ImageBrush ImageSource="/Resources/Images/jujutsu.png"
                     Stretch="UniformToFill"/>
         </Grid.Background>
 

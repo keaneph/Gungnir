@@ -3,9 +3,12 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using glaive;
+using sis_app.Services;    // For the services
+using sis_app.Controls.Add;    // For Add controls
+using sis_app.Controls.View;   // For View controls
+using sis_app.Views;      // For DashboardView and AboutView
 
-namespace sis_app
+namespace sis_app.Views
 {
     public partial class MainWindow : Window
     {

@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Navigation;
 
-namespace glaive
+namespace sis_app.Views
 {
     public partial class AboutView : UserControl
     {

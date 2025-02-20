@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 
-namespace glaive
+namespace sis_app.Services
 {
     public class UserDataService
     {

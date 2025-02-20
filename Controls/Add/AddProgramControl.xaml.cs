@@ -4,8 +4,10 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Collections.Generic; // For List<T>
 using System.Linq; // For LINQ
+using sis_app.Models;      // For Program class
+using sis_app.Services;    // For ProgramDataService and CollegeDataService
 
-namespace glaive
+namespace sis_app.Controls.Add
 {
     public partial class AddProgramControl : UserControl
     {

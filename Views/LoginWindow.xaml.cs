@@ -1,8 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using sis_app;
+using sis_app.Services;
 
-namespace glaive
+namespace sis_app.Views
 {
     public partial class LoginWindow : Window
     {

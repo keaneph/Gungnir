@@ -6,8 +6,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using sis_app.Models;      // For College class
+using sis_app.Services;    // For CollegeDataService
 
-namespace glaive
+namespace sis_app.Controls.View
 {
     public partial class ViewCollegesControl : UserControl
     {

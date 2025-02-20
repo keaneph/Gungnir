@@ -5,8 +5,10 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using sis_app.Models;      // For Student class
+using sis_app.Services;    // For the services
 
-namespace glaive
+namespace sis_app.Controls.Add
 {
     public partial class AddStudentControl : UserControl
     {

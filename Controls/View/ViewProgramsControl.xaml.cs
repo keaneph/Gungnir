@@ -6,8 +6,10 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using sis_app.Models;      // For Program class
+using sis_app.Services;    // For ProgramDataService
 
-namespace glaive
+namespace sis_app.Controls.View
 {
     public partial class ViewProgramsControl : UserControl
     {
