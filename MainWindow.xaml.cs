@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -110,6 +111,50 @@ namespace sis_app
         {
             // Implement logic for history page here
             UpdateDirectory("History");
+        }
+
+        private void YouTube_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo("https://www.youtube.com/@keane6635")
+                { UseShellExecute = true });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error opening YouTube: {ex.Message}", "Error");
+            }
+        }
+
+        private void GitHub_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo("https://github.com/keaneph")
+                { UseShellExecute = true });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error opening GitHub: {ex.Message}", "Error");
+            }
+        }
+
+        private void LinkedIn_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo("https://www.linkedin.com/in/keanepharelle/")
+                { UseShellExecute = true });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error opening LinkedIn: {ex.Message}", "Error");
+            }
+        }
+
+        private void Settings_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Settings functionality coming soon!", "Settings");
         }
     }
 }
