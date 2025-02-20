@@ -23,6 +23,7 @@ namespace glaive
             _programs = new ObservableCollection<Program>(_programDataService.GetAllPrograms());
             ProgramListView.ItemsSource = _programs;
 
+            SortComboBox.SelectedIndex = 0;
         }
 
         public void LoadPrograms()
@@ -122,6 +123,9 @@ namespace glaive
 
                 switch (sortOption)
                 {
+                    case "Date and Time Modified (Oldest First)":
+                        SortList(c => c.DateTime, ListSortDirection.Ascending);
+                        break;
                     case "Date and Time Modified (Newest First)":
                         SortList(p => p.DateTime, ListSortDirection.Descending);
                         break;
