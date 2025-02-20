@@ -8,7 +8,7 @@
 	<Grid>
 		<Border HorizontalAlignment="Center"
                 VerticalAlignment="Center"
-                Width="675"
+                Width="600"
                 CornerRadius="15"
                 Padding="0,10,0,15">
 
@@ -93,7 +93,7 @@
 									<DataTemplate>
 										<TextBlock Text="{Binding DateTime}"
                                                  Style="{StaticResource TableCellStyle}"
-                                                 Width="{Binding Width, RelativeSource={RelativeSource AncestorType=GridViewColumn}}"/>
+                                                 Width="150"/>
 									</DataTemplate>
 								</GridViewColumn.CellTemplate>
 							</GridViewColumn>

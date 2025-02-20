@@ -447,7 +447,7 @@
         <Setter Property="Margin" Value="0"/>
         <Setter Property="Padding" Value="0"/>
         <!-- i want width to have fixed size so disabling horizontal scroll bar for future purposes -->
-        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
 
         <!--  i want this to always be disabled, it looks weird if there is no data -->
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Visible"/>

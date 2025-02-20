@@ -10,6 +10,7 @@ namespace glaive
 {
     public partial class AddStudentControl : UserControl
     {
+        public event EventHandler StudentAdded;
         private StudentDataService _studentDataService;
         private CollegeDataService _collegeDataService;
         private ProgramDataService _programDataService;
@@ -26,40 +27,46 @@ namespace glaive
         {
             if (AreAllFieldsValid())
             {
-                string idNumber = $"{YearTextBox.Text}-{NumberTextBox.Text}";
-
-                Student newStudent = new Student
-                {
-                    IDNumber = idNumber,
-                    FirstName = FirstNameTextBox.Text,
-                    LastName = LastNameTextBox.Text,
-                    YearLevel = int.Parse(YearLevelComboBox.SelectedItem.ToString()),
-                    Gender = GenderComboBox.SelectedItem.ToString(),
-                    ProgramCode = ProgramCodeComboBox.SelectedItem?.ToString(),
-                    CollegeCode = CollegeCodeComboBox.SelectedItem.ToString(),
-                    DateTime = DateTime.Now,
-                    User = _studentDataService.CurrentUser
-                };
-
                 try
                 {
+                    string idNumber = $"{YearTextBox.Text}-{NumberTextBox.Text}";
+
+                    // Properly get the values from ComboBoxes
+                    var yearLevelContent = ((ComboBoxItem)YearLevelComboBox.SelectedItem).Content.ToString();
+                    var genderContent = ((ComboBoxItem)GenderComboBox.SelectedItem).Content.ToString();
+
+                    Student newStudent = new Student
+                    {
+                        IDNumber = idNumber,
+                        FirstName = FirstNameTextBox.Text,
+                        LastName = LastNameTextBox.Text,
+                        YearLevel = int.Parse(yearLevelContent),  // Changed this
+                        Gender = genderContent,  // Changed this
+                        ProgramCode = ProgramCodeComboBox.SelectedItem?.ToString(),
+                        CollegeCode = CollegeCodeComboBox.SelectedItem.ToString(),
+                        DateTime = DateTime.Now,
+                        User = _studentDataService.CurrentUser
+                    };
+
                     _studentDataService.AddStudent(newStudent);
                     MessageBox.Show($"Added student {newStudent.FirstName} {newStudent.LastName} ({newStudent.IDNumber})", "Success");
+
+                    StudentAdded?.Invoke(this, EventArgs.Empty);
+
+                    // Clear fields
+                    YearTextBox.Clear();
+                    NumberTextBox.Clear();
+                    FirstNameTextBox.Clear();
+                    LastNameTextBox.Clear();
+                    YearLevelComboBox.SelectedIndex = -1;
+                    GenderComboBox.SelectedIndex = -1;
+                    ProgramCodeComboBox.SelectedIndex = -1;
+                    CollegeCodeComboBox.SelectedIndex = -1;
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error adding student: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error adding student: {ex.Message}\n\nStack Trace: {ex.StackTrace}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-
-                // Clear fields
-                YearTextBox.Clear();
-                NumberTextBox.Clear();
-                FirstNameTextBox.Clear();
-                LastNameTextBox.Clear();
-                YearLevelComboBox.SelectedIndex = -1;
-                GenderComboBox.SelectedIndex = -1;
-                ProgramCodeComboBox.SelectedIndex = -1;
-                CollegeCodeComboBox.SelectedIndex = -1;
             }
             else
             {

@@ -17,6 +17,8 @@ namespace sis_app
         private DashboardView _dashboardView;
         private StudentDataService _studentDataService;
         private AddStudentControl _addStudentControl;
+        private ViewStudentControl _viewStudentControl;
+
 
         public string CurrentUser { get; set; } = "Admin";
 
@@ -36,6 +38,9 @@ namespace sis_app
             _dashboardView = new DashboardView();
             _studentDataService = new StudentDataService("students.csv") { CurrentUser = CurrentUser };
             _addStudentControl = new AddStudentControl(_studentDataService, _collegeDataService, _programDataService);
+            _viewStudentControl = new ViewStudentControl(_studentDataService);
+
+            _addStudentControl.StudentAdded += (s, e) => _viewStudentControl.LoadStudents();
 
             LoginStatus.Text = CurrentUser;
             ProfileName.Text = CurrentUser;
@@ -90,8 +95,9 @@ namespace sis_app
 
         private void NavigateViewOption3_Click(object sender, RoutedEventArgs e)
         {
-            // Implement logic for viewing students here
-            UpdateDirectory("View/Students"); // Placeholder
+            _viewStudentControl.LoadStudents();
+            MainContent.Content = _viewStudentControl;
+            UpdateDirectory("View/Students");
         }
 
         private void NavigateAbout_Click(object sender, RoutedEventArgs e)
