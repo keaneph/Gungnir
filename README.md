@@ -39,11 +39,11 @@ A comprehensive Student Information Management System developed using Windows Pr
 1. Clone the repository
 
 ```bash
-  git https://github.com/keaneph/Gungnir.git
+  git clone https://github.com/keaneph/Gungnir.git
 ```
 
 
-2. Open the project (sis-app.sln) in Visual Studio
+2. Open the project (*sis-app.sln*) in Visual Studio
 3. Build the project
 4. Run the project
 
