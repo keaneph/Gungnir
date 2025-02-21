@@ -1,7 +1,9 @@
 
-# Gungnir
+# Gungnir - Student Information System
 
-A student sheet information system, based on Windows Presentation Foundation (WPF).
+A comprehensive Student Information Management System developed using Windows Presentation Foundation (WPF), 
+designed to efficiently manage college records, program information, and student data.
+
 
 ## Dashboard Demo
 ![image](https://github.com/user-attachments/assets/136fb263-1e1a-4737-922c-5fbb10c54b23)
