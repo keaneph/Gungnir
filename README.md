@@ -43,27 +43,27 @@ efficiently manage college records, program information, and student data.
 
 Contributions are always welcome!
 
-Please read [CONTRIBUTING.md](https://github.com/keaneph/Gungnir/blob/master/CONTRIBUTING) for details on our code of conduct, and the
+Please read [CONTRIBUTING.md](CONTRIBUTING) for details on our code of conduct, and the
 process for submitting pull requests to us.
 
 
 ## Built With
-C# (.NET Framework)
-Windows Presentation Foundation (WPF)
-XAML
-CSV Data Storage
+- C# (.NET Framework)
+- Windows Presentation Foundation (WPF)
+- XAML
+- CSV Data Storage
 
 
 ## Author
--[@keaneph](https://github.com/keaneph) - *Initial work*
+* [@keaneph](https://github.com/keaneph) - *Initial work*
 
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/keaneph/Gungnir/blob/master/LICENSE) for details
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) for details
 
 
 ## Acknowledgements
--[@SamHuertas](https://github.com/SamHuertas) - for his unbiased criticism and valuable feedback
--[@brexer](https://github.com/brexer) - for lending his mobile hotspot during the development phase
--[@Ordinary33](https://github.com/Ordinary33) - for his unwavering support and encouragement
+* [@SamHuertas](https://github.com/SamHuertas) - for his unbiased criticism and valuable feedback
+* [@brexer](https://github.com/brexer) - for lending his mobile hotspot during the development phase
+* [@Ordinary33](https://github.com/Ordinary33) - for his unwavering support and encouragement
