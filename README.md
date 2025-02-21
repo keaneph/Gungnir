@@ -43,7 +43,7 @@ efficiently manage college records, program information, and student data.
 
 Contributions are always welcome!
 
-Please read [CONTRIBUTING.md](CONTRIBUTING) for details on our code of conduct, and the
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the
 process for submitting pull requests to us.
 
 
