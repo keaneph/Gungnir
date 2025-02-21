@@ -1,44 +1,68 @@
-# Gungnir - Student Information System
+# Gungnir
 
-A WPF-based student information system for managing college programs and student data.
+A comprehensive Student Information Management System developed using Windows Presentation Foundation (WPF), designed to 
+efficiently manage college records, program information, and student data.
+
+
+## Dashboard Demo
+
+![image](https://github.com/user-attachments/assets/136fb263-1e1a-4737-922c-5fbb10c54b23)
+
 
 ## Features
-- User Authentication
-- College Management
-  - Add/View/Edit/Delete Colleges
-- Program Management
-  - Add/View/Edit/Delete Programs
-  - Link Programs to Colleges
-- Student Management
-  - Add/View/Edit/Delete Students
-  - Assign Students to Programs
-- History Tracking
-  - Track all system activities
-  - Real-time updates
 
-## Project Structure
-- `/Controls` - User interface controls for Add and View operations
-- `/Models` - Data models for College, Program, and Student
-- `/Services` - Data services for handling CSV operations
-- `/Views` - Main application windows and views
-- `/Resources` - Images and styles
+- **User Authentication**
+- **College Management**
+- **Program Management**
+- **Student Management**
 
-## Technologies
-- C#
-- WPF (Windows Presentation Foundation)
-- .NET Framework
-- CSV Data Storage
+## Installation
 
-## Setup
 1. Clone the repository
-2. Open in Visual Studio
-3. Build and Run
 
-## Screenshots
-[You can add screenshots of your application here]
+```bash
+  git clone https://github.com/keaneph/Gungnir.git
+```
+
+2. Open the project (*sis-app.sln*) in Visual Studio
+3. Build the project
+4. Run the project
+
+
+## Roadmap
+
+- Migration as a dynamic web application (ASP.NET Core)
+- Feature enhancements like history tracking
+- User roles and permissions
+- Improved data validation
+- Data export, import, backup, and restore
+- Database integration (SQL Server, MySQL, PostgreSQL)
+
+
+## Contributing
+
+Contributions are always welcome!
+
+See `contributing.md` for ways to get started.
+
+Please adhere to this project's `code of conduct`.
+
+
+## Technologies Used
+C# (.NET Framework)
+Windows Presentation Foundation (WPF)
+XAML
+CSV Data Storage
+
 
 ## Author
-[Your Name]
+[@keaneph](https://github.com/keaneph)
+
+## Acknowledgements
+[@SamHuertas](https://github.com/SamHuertas) - for his unbiased criticism and valuable feedback
+[@brexer](https://github.com/brexer) - for lending his mobile hotspot during the development phase
+[@Ordinary33](https://github.com/Ordinary33) - for his unwavering support
 
 ## License
-[Your License]
+[MIT](https://github.com/keaneph/Gungnir/blob/master/LICENSE)
+
