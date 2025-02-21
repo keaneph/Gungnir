@@ -14,7 +14,7 @@
             Padding="30">
         
         <StackPanel>
-            <!-- App Name/Logo -->
+            <!-- header -->
             <TextBlock Text="GUNGNIR"
                       Style="{StaticResource BaseTextBlockStyle}"
                       FontSize="48"
@@ -22,14 +22,14 @@
                       HorizontalAlignment="Center"
                       Margin="0,0,0,10"/>
 
-            <!-- Subtitle -->
-            <TextBlock Text="Student Information Sheet System"
+            <!-- subheader -->
+            <TextBlock Text="Student Information System"
                       Style="{StaticResource BaseTextBlockStyle}"
                       FontSize="20"
                       HorizontalAlignment="Center"
                       Margin="0,0,0,5"/>
 
-            <!-- Version -->
+            <!-- ver -->
             <TextBlock Text="Version 1.0"
                       Style="{StaticResource BaseTextBlockStyle}"
                       FontSize="14"
@@ -40,22 +40,21 @@
             <!-- Description -->
             <TextBlock Style="{StaticResource BaseTextBlockStyle}"
                       TextWrapping="Wrap"
-                      Margin="0,0,0,20"
+                      Margin="20,0,20,20"
                       TextAlignment="Center"
                       FontSize="14">
-                A comprehensive Student Information Management System developed for CCC151 - 
-                Computer Programming 3, designed to efficiently manage college records, 
+                A Student Information System made in Windows Presentation Foundation (WPF) under the .NET Framework, designed to efficiently manage college records, 
                 program information, and student data.
             </TextBlock>
 
-            <!-- Two-Column Layout for Features and Technical Info -->
+            <!-- features and tech shi -->
             <Grid Margin="0,0,0,20">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Left Column - Features -->
+                <!-- left column -->
                 <StackPanel Grid.Column="0" Margin="0,0,10,0" HorizontalAlignment="Center">
                     <TextBlock Text="Key Features"
                               Style="{StaticResource BaseTextBlockStyle}"
@@ -68,16 +67,16 @@
                               FontSize="14"
                               TextWrapping="Wrap"
                               TextAlignment="Center">
+                        User Authentication<LineBreak/>
                         College Management<LineBreak/>
-                        Program Administration<LineBreak/>
-                        Student Information Tracking<LineBreak/>
-                        Data Export Capabilities
+                        Program Management<LineBreak/>
+                        Student Management
                     </TextBlock>
                 </StackPanel>
 
-                <!-- Right Column - Technical Info -->
+                <!-- right column -->
                 <StackPanel Grid.Column="1" Margin="10,0,0,0">
-                    <TextBlock Text="Technical Details"
+                    <TextBlock Text="Built With"
                               Style="{StaticResource BaseTextBlockStyle}"
                               FontWeight="Bold"
                               FontSize="16"
@@ -88,10 +87,10 @@
                               FontSize="14"
                               TextWrapping="Wrap"
                               TextAlignment="Center">
-                        WPF Application<LineBreak/>
-                        .NET Framework<LineBreak/>
-                        CSV Data Storage<LineBreak/>
-                        XAML-based UI
+                        C# (.NET Framework)<LineBreak/>
+                        Windows Presentation Foundation (WPF)<LineBreak/>
+                        XAML<LineBreak/>
+                        CSV Data Storage
                     </TextBlock>
                 </StackPanel>
             </Grid>
