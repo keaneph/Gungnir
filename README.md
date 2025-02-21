@@ -1,6 +1,6 @@
 # Gungnir
 
-A comprehensive Student Information Management System developed using Windows Presentation Foundation (WPF), designed to 
+A simple Student Information System developed using Windows Presentation Foundation (WPF), designed to 
 efficiently manage college records, program information, and student data.
 
 
@@ -43,8 +43,8 @@ efficiently manage college records, program information, and student data.
 
 Contributions are always welcome!
 
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the
-process for submitting pull requests to us.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on my code of conduct, and the
+process for submitting pull requests to me.
 
 
 ## Built With
@@ -64,6 +64,7 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 
 ## Acknowledgements
+
 * [@SamHuertas](https://github.com/SamHuertas) - for his unbiased criticism and valuable feedback
 * [@brexer](https://github.com/brexer) - for lending his mobile hotspot during the development phase
 * [@Ordinary33](https://github.com/Ordinary33) - for his unwavering support and encouragement
