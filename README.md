@@ -1,44 +1,85 @@
-# Gungnir - Student Information System
 
-A WPF-based student information system for managing college programs and student data.
+# Gungnir
+
+A student sheet information system, based on Windows Presentation Foundation (WPF).
+
+![image](https://github.com/user-attachments/assets/0da7dea1-e6ff-43be-a9f4-05de524e55df)
+![image](https://github.com/user-attachments/assets/136fb263-1e1a-4737-922c-5fbb10c54b23)
+
+
+## Run Locally (Installation)
+
+Clone the project
+
+```bash
+  git clone https://link-to-project
+```
+
+Go to the project directory
+
+```bash
+  cd my-project
+```
+
+Install dependencies
+
+```bash
+  npm install
+```
+
+Start the server
+
+```bash
+  npm run start
+```
+
 
 ## Features
-- User Authentication
-- College Management
-  - Add/View/Edit/Delete Colleges
-- Program Management
-  - Add/View/Edit/Delete Programs
-  - Link Programs to Colleges
-- Student Management
-  - Add/View/Edit/Delete Students
-  - Assign Students to Programs
-- History Tracking
-  - Track all system activities
-  - Real-time updates
 
-## Project Structure
-- `/Controls` - User interface controls for Add and View operations
-- `/Models` - Data models for College, Program, and Student
-- `/Services` - Data services for handling CSV operations
-- `/Views` - Main application windows and views
-- `/Resources` - Images and styles
+- Light/dark mode toggle
+- Live previews
+- Fullscreen mode
+- Cross platform
 
-## Technologies
-- C#
-- WPF (Windows Presentation Foundation)
-- .NET Framework
-- CSV Data Storage
 
-## Setup
-1. Clone the repository
-2. Open in Visual Studio
-3. Build and Run
+## Roadmap
 
-## Screenshots
-[You can add screenshots of your application here]
+- Additional browser support
 
-## Author
-[Your Name]
+- Add more integrations
 
-## License
-[Your License]
+
+## Color Reference
+
+| Color             | Hex                                                                |
+| ----------------- | ------------------------------------------------------------------ |
+| Example Color | ![#0a192f](https://via.placeholder.com/10/0a192f?text=+) #0a192f |
+| Example Color | ![#f8f8f8](https://via.placeholder.com/10/f8f8f8?text=+) #f8f8f8 |
+| Example Color | ![#00b48a](https://via.placeholder.com/10/00b48a?text=+) #00b48a |
+| Example Color | ![#00d1a0](https://via.placeholder.com/10/00b48a?text=+) #00d1a0 |
+
+## Contributing
+
+Contributions are always welcome!
+
+See `contributing.md` for ways to get started.
+
+Please adhere to this project's `code of conduct`.
+
+
+## Acknowledgements
+
+ - [Awesome Readme Templates](https://awesomeopensource.com/project/elangosundar/awesome-README-templates)
+ - [Awesome README](https://github.com/matiassingers/awesome-readme)
+ - [How to write a Good readme](https://bulldogjob.com/news/449-how-to-write-a-good-readme-for-your-github-project)
+
+
+## Feedback
+
+If you have any feedback, please reach out to us at fake@fake.com
+
+
+## Appendix
+
+Any additional information goes here
+
