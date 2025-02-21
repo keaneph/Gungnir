@@ -3,13 +3,8 @@
 
 A student sheet information system, based on Windows Presentation Foundation (WPF).
 
-
-# Login Demo
-![image](https://github.com/user-attachments/assets/0da7dea1-e6ff-43be-a9f4-05de524e55df)
-
 # Dashboard Demo
 ![image](https://github.com/user-attachments/assets/136fb263-1e1a-4737-922c-5fbb10c54b23)
-
 
 ## Run Locally (Installation)
 
