@@ -43,7 +43,6 @@ namespace sis_app.Views
             _studentDataService = new StudentDataService("students.csv") { CurrentUser = CurrentUser };
             _addStudentControl = new AddStudentControl(_studentDataService, _collegeDataService, _programDataService);
             _viewStudentControl = new ViewStudentControl(_studentDataService);
-
             _addStudentControl.StudentAdded += (s, e) => _viewStudentControl.LoadStudents();
 
             LoginStatus.Text = CurrentUser;
@@ -112,7 +111,7 @@ namespace sis_app.Views
 
         private void NavigateHistory_Click(object sender, RoutedEventArgs e)
         {
-            // Implement logic for history page here
+            MainContent.Content = new HistoryView();
             UpdateDirectory("History");
         }
 

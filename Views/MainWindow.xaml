@@ -438,7 +438,7 @@
                     </Border>
                     <!-- Real-Time Updates Box -->
                     <Border BorderBrush="{StaticResource LightGray}" BorderThickness="1" Height="314" Padding="10">
-                        <TextBlock Text="Real-time updates will appear here..." Style="{StaticResource DefaultTextBlockStyle}" TextWrapping="Wrap"/>
+                        <TextBlock Text="Real-time updates will appear here soon..." Style="{StaticResource DefaultTextBlockStyle}" TextWrapping="Wrap"/>
                     </Border>
                 </StackPanel>
             </Border>
