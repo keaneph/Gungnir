@@ -1,86 +1,82 @@
-
 # Gungnir - Student Information System
 
-A comprehensive Student Information Management System developed using Windows Presentation Foundation (WPF), 
-designed to efficiently manage college records, program information, and student data.
-
-
-## Dashboard Demo
-![image](https://github.com/user-attachments/assets/136fb263-1e1a-4737-922c-5fbb10c54b23)
-
-## Run Locally (Installation)
-
-Clone the project
-
-```bash
-  git clone https://link-to-project
-```
-
-Go to the project directory
-
-```bash
-  cd my-project
-```
-
-Install dependencies
-
-```bash
-  npm install
-```
-
-Start the server
-
-```bash
-  npm run start
-```
-
+A comprehensive Student Information Management System developed using Windows Presentation Foundation (WPF), designed to efficiently manage college records, program information, and student data.
 
 ## Features
 
-- Light/dark mode toggle
-- Live previews
-- Fullscreen mode
-- Cross platform
+- **User Authentication**
+  - Secure login system
+  - User session management
 
+- **College Management**
+  - Add/View/Edit/Delete colleges
+  - Real-time updates
+  - Sorting capabilities
 
-## Roadmap
+- **Program Management**
+  - Add/View/Edit/Delete programs
+  - Link programs to colleges
+  - Automated college code association
 
-- Additional browser support
+- **Student Management**
+  - Add/View/Edit/Delete students
+  - ID number generation
+  - Program and college association
 
-- Add more integrations
-
+- **History Tracking**
+  - Track all system activities
+  - Real-time updates display
+  - Sortable history view
 
 ## Color Reference
 
 | Color             | Hex                                                                |
 | ----------------- | ------------------------------------------------------------------ |
-| Example Color | ![#0a192f](https://via.placeholder.com/10/0a192f?text=+) #0a192f |
-| Example Color | ![#f8f8f8](https://via.placeholder.com/10/f8f8f8?text=+) #f8f8f8 |
-| Example Color | ![#00b48a](https://via.placeholder.com/10/00b48a?text=+) #00b48a |
-| Example Color | ![#00d1a0](https://via.placeholder.com/10/00b48a?text=+) #00d1a0 |
+| Primary Purple | ![#7160E8](https://via.placeholder.com/10/7160E8?text=+) #7160E8 |
+| Dark Gray | ![#1F1F1F](https://via.placeholder.com/10/1F1F1F?text=+) #1F1F1F |
+| Medium Light Gray | ![#2E2E2E](https://via.placeholder.com/10/2E2E2E?text=+) #2E2E2E |
+| Light Gray | ![#383838](https://via.placeholder.com/10/383838?text=+) #383838 |
+| White | ![#D6D6D6](https://via.placeholder.com/10/D6D6D6?text=+) #D6D6D6 |
 
-## Contributing
+## Installation
 
-Contributions are always welcome!
+1. Clone the repository
+```bash
+git clone https://github.com/keaneph/Gungnir.git
+```
 
-See `contributing.md` for ways to get started.
+2. Open the project (sis-app.sln) in Visual Studio
+3. Build the project
+4. Run the project
 
-Please adhere to this project's `code of conduct`.
+## Project Structure
 
+```bash
+sis-app/
+├── Controls/          
+│   ├── Add/          # Add operation controls
+│   └── View/         # View operation controls
+├── Models/           # Data models
+├── Services/         # Data services
+├── Views/            # Main views
+├── Resources/        # Resource files
+└── App.xaml         # Application entry point
+```
+
+## Technologies Used
+C# (.NET Framework)
+Windows Presentation Foundation (WPF)
+XAML
+CSV Data Storage
+
+## Running the Application
+Start the application (F5 or Run button in Visual Studio)
+Login with your credentials
+Navigate using the sidebar menu
+Manage colleges, programs, and students
+
+## Author
+[@keaneph](https://github.com/keaneph)
 
 ## Acknowledgements
-
- - [Awesome Readme Templates](https://awesomeopensource.com/project/elangosundar/awesome-README-templates)
- - [Awesome README](https://github.com/matiassingers/awesome-readme)
- - [How to write a Good readme](https://bulldogjob.com/news/449-how-to-write-a-good-readme-for-your-github-project)
-
-
-## Feedback
-
-If you have any feedback, please reach out to us at fake@fake.com
-
-
-## Appendix
-
-Any additional information goes here
 
