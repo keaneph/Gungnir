@@ -47,6 +47,20 @@ A comprehensive Student Information Management System developed using Windows Pr
 3. Build the project
 4. Run the project
 
+## Roadmap
+
+- Additional browser support
+
+- Add more integrations
+  
+## Contributing
+
+Contributions are always welcome!
+
+See `contributing.md` for ways to get started.
+
+Please adhere to this project's `code of conduct`.
+
 ## Technologies Used
 C# (.NET Framework)
 Windows Presentation Foundation (WPF)
