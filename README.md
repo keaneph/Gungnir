@@ -1,6 +1,6 @@
 # Gungnir
 
-A simple Student Information System developed using Windows Presentation Foundation (WPF), designed to 
+A simple Student Information System (version 1.0) developed using Windows Presentation Foundation (WPF), designed to 
 efficiently manage college records, program information, and student data.
 
 
