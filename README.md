@@ -20,7 +20,7 @@ efficiently manage college records, program information, and student data.
 
 1. Clone the repository
 
-```bash
+```
   git clone https://github.com/keaneph/Gungnir.git
 ```
 
