@@ -1,310 +1,200 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Collections.Generic;
+using System.Linq;
 using sis_app.Models;
 using sis_app.Services;
 
 namespace sis_app.Controls.Add
 {
-    public partial class AddStudentControl : UserControl
+    public partial class AddProgramControl : UserControl
     {
-        // character limits for text fields
-        private const int MAX_FIRSTNAME_LENGTH = 26;
-        private const int MAX_LASTNAME_LENGTH = 14;
-        private const int YEAR_LENGTH = 4;
-        private const int NUMBER_LENGTH = 4;
-        private const int MIN_YEAR = 2016;
-        private const int MAX_YEAR = 2025;
+        // character limits for program name and code
+        private const int MAX_PROGRAM_NAME_LENGTH = 20;
+        private const int MAX_PROGRAM_CODE_LENGTH = 7;
 
         // services for handling data operations
-        private StudentDataService _studentDataService;
-        private CollegeDataService _collegeDataService;
         private ProgramDataService _programDataService;
+        private CollegeDataService _collegeDataService;
 
         // constructor initializes the control and sets up the data services
-        public AddStudentControl(StudentDataService studentDataService, CollegeDataService collegeDataService, ProgramDataService programDataService)
+        public AddProgramControl(ProgramDataService programDataService, CollegeDataService collegeDataService)
         {
             InitializeComponent();
-            _studentDataService = studentDataService;
-            _collegeDataService = collegeDataService;
             _programDataService = programDataService;
+            _collegeDataService = collegeDataService;
 
             // attach text changed event handlers for length validation
-            FirstNameTextBox.TextChanged += FirstNameTextBox_TextChanged;
-            LastNameTextBox.TextChanged += LastNameTextBox_TextChanged;
-            NumberTextBox.TextChanged += NumberTextBox_TextChanged;
+            ProgramNameTextBox.TextChanged += ProgramNameTextBox_TextChanged;
+            ProgramCodeTextBox.TextChanged += ProgramCodeTextBox_TextChanged;
 
-            LoadProgramCodes();
+            LoadCollegeCodes();
         }
 
-        // loads program codes into combobox
-        public void LoadProgramCodes()
+        // loads college codes into the combobox
+        public void LoadCollegeCodes()
         {
-            var programCodes = _programDataService.GetAllPrograms().Select(p => p.Code).ToList();
-            ProgramCodeComboBox.ItemsSource = programCodes;
-
-            CollegeCodeComboBox.Items.Clear();
-            CollegeCodeComboBox.Items.Add("Select College");
-            CollegeCodeComboBox.SelectedIndex = 0;
-            CollegeCodeComboBox.IsEnabled = false;
+            List<string> collegeCodes = _collegeDataService.GetAllColleges().Select(c => c.Code).ToList();
+            CollegeCodeComboBox.ItemsSource = collegeCodes;
         }
 
-        // handles the add student button click event
-        private void AddStudentButton_Click(object sender, RoutedEventArgs e)
+        // handles the add program button click event
+        private void AddProgramButton_Click(object sender, RoutedEventArgs e)
         {
             if (ValidateInput())
             {
                 try
                 {
-                    // create id number from year and number
-                    string idNumber = $"{YearTextBox.Text}-{NumberTextBox.Text}";
-
-                    // get selected values from comboboxes
-                    var yearLevelContent = ((ComboBoxItem)YearLevelComboBox.SelectedItem).Content.ToString();
-                    var genderContent = ((ComboBoxItem)GenderComboBox.SelectedItem).Content.ToString();
-
-                    // create new student object with current data
-                    Student newStudent = new Student
+                    // create new program object with current data
+                    Program newProgram = new Program
                     {
-                        IDNumber = idNumber,
-                        FirstName = FirstNameTextBox.Text,
-                        LastName = LastNameTextBox.Text,
-                        YearLevel = int.Parse(yearLevelContent),
-                        Gender = genderContent,
-                        ProgramCode = ProgramCodeComboBox.SelectedItem?.ToString(),
+                        Name = ProgramNameTextBox.Text,
+                        Code = ProgramCodeTextBox.Text,
                         CollegeCode = CollegeCodeComboBox.SelectedItem.ToString(),
                         DateTime = DateTime.Now,
-                        User = _studentDataService.CurrentUser
+                        User = _programDataService.CurrentUser
                     };
 
-                    // validate student id doesn't already exist
-                    var existingStudents = _studentDataService.GetAllStudents();
-                    if (existingStudents.Exists(s => s.IDNumber.Equals(idNumber, StringComparison.OrdinalIgnoreCase)))
+                    // validate program code doesn't already exist
+                    var existingPrograms = _programDataService.GetAllPrograms();
+                    if (existingPrograms.Exists(p => p.Code.Equals(newProgram.Code, StringComparison.OrdinalIgnoreCase)))
                     {
-                        MessageBox.Show($"A student with ID number '{idNumber}' already exists.", "Error",
+                        MessageBox.Show($"A program with code '{newProgram.Code}' already exists.", "Error",
                             MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
 
-                    // add the student to the data service
-                    _studentDataService.AddStudent(newStudent);
+                    // add the program to the data service
+                    _programDataService.AddProgram(newProgram);
 
                     // show success message
-                    MessageBox.Show($"Added student {newStudent.FirstName} {newStudent.LastName} ({newStudent.IDNumber})", "Success");
+                    MessageBox.Show($"Added program {newProgram.Name} ({newProgram.Code})", "Success");
 
                     // clear input fields after successful addition
                     ClearFields();
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error adding student: {ex.Message}", "Error",
+                    MessageBox.Show($"Error adding program: {ex.Message}", "Error",
                         MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
 
-        // clears all input fields
+        // clears the input fields
         private void ClearFields()
         {
-            YearTextBox.Clear();
-            NumberTextBox.Clear();
-            FirstNameTextBox.Clear();
-            LastNameTextBox.Clear();
-            YearLevelComboBox.SelectedIndex = -1;
-            GenderComboBox.SelectedIndex = -1;
-            ProgramCodeComboBox.SelectedIndex = -1;
+            ProgramNameTextBox.Text = "";
+            ProgramCodeTextBox.Text = "";
             CollegeCodeComboBox.SelectedIndex = -1;
         }
 
-        // validates name input to allow only letters
-        private void FirstNameTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        // validates program name input to allow only letters
+        private void ProgramNameTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
+            // regex pattern to match any character that's not a letter
             Regex regex = new Regex("[^a-zA-Z]+");
             e.Handled = regex.IsMatch(e.Text);
         }
 
-        private void LastNameTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        // validates program code input to allow only letters
+        private void ProgramCodeTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
+            // regex pattern to match any character that's not a letter
             Regex regex = new Regex("[^a-zA-Z]+");
             e.Handled = regex.IsMatch(e.Text);
         }
 
-        // validates numeric input
-        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
-        {
-            Regex regex = new Regex("[^0-9]+");
-            e.Handled = regex.IsMatch(e.Text);
-        }
-
-        // validates year input
-        private void YearTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            Regex regex = new Regex("[^0-9]+");
-            if (regex.IsMatch(e.Text) || YearTextBox.Text.Length >= YEAR_LENGTH)
-            {
-                e.Handled = true;
-            }
-        }
-
-        // validates number input
-        private void NumberTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            Regex regex = new Regex("[^0-9]+");
-            if (regex.IsMatch(e.Text) || NumberTextBox.Text.Length >= NUMBER_LENGTH)
-            {
-                e.Handled = true;
-            }
-        }
-
-        // handles first name text changes
-        private void FirstNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        // handles program name text changes
+        private void ProgramNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (sender is TextBox textBox)
             {
-                if (textBox.Text.Length > MAX_FIRSTNAME_LENGTH)
+                // enforce maximum length for program name
+                if (textBox.Text.Length > MAX_PROGRAM_NAME_LENGTH)
                 {
-                    textBox.Text = textBox.Text.Substring(0, MAX_FIRSTNAME_LENGTH);
-                    textBox.CaretIndex = MAX_FIRSTNAME_LENGTH;
+                    textBox.Text = textBox.Text.Substring(0, MAX_PROGRAM_NAME_LENGTH);
+                    textBox.CaretIndex = MAX_PROGRAM_NAME_LENGTH;
                 }
             }
         }
 
-        // handles last name text changes
-        private void LastNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        // handles program code text changes
+        private void ProgramCodeTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (sender is TextBox textBox)
             {
-                if (textBox.Text.Length > MAX_LASTNAME_LENGTH)
-                {
-                    textBox.Text = textBox.Text.Substring(0, MAX_LASTNAME_LENGTH);
-                    textBox.CaretIndex = MAX_LASTNAME_LENGTH;
-                }
-            }
-        }
+                // store current caret position
+                int caretIndex = textBox.CaretIndex;
 
-        // handles number text changes
-        private void NumberTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (sender is TextBox textBox && !string.IsNullOrEmpty(textBox.Text))
-            {
-                // ensure the number is padded with leading zeros
-                if (int.TryParse(textBox.Text, out int number))
-                {
-                    textBox.Text = number.ToString("D4");
-                    textBox.CaretIndex = textBox.Text.Length;
-                }
-            }
-        }
+                // convert program code to uppercase
+                textBox.Text = textBox.Text.ToUpper();
 
-        // handles program code selection change
-        private void ProgramCodeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (ProgramCodeComboBox.SelectedItem != null)
-            {
-                string selectedProgramCode = ProgramCodeComboBox.SelectedItem.ToString();
-                var selectedProgram = _programDataService.GetAllPrograms().FirstOrDefault(p => p.Code == selectedProgramCode);
-                if (selectedProgram != null)
+                // enforce maximum length for program code
+                if (textBox.Text.Length > MAX_PROGRAM_CODE_LENGTH)
                 {
-                    CollegeCodeComboBox.IsEnabled = true;
-                    CollegeCodeComboBox.Items.Clear();
-                    CollegeCodeComboBox.Items.Add(selectedProgram.CollegeCode);
-                    CollegeCodeComboBox.SelectedIndex = 0;
+                    textBox.Text = textBox.Text.Substring(0, MAX_PROGRAM_CODE_LENGTH);
+                    caretIndex = MAX_PROGRAM_CODE_LENGTH;
                 }
+
+                // restore caret position
+                textBox.CaretIndex = caretIndex;
             }
         }
 
         // performs comprehensive input validation
         private bool ValidateInput()
         {
-            // validate year
-            if (string.IsNullOrWhiteSpace(YearTextBox.Text) ||
-                !int.TryParse(YearTextBox.Text, out int year) ||
-                year < MIN_YEAR || year > MAX_YEAR)
+            // check if program name is empty
+            if (string.IsNullOrWhiteSpace(ProgramNameTextBox.Text))
             {
-                MessageBox.Show($"Please enter a valid year between {MIN_YEAR} and {MAX_YEAR}.", "Validation Error",
+                MessageBox.Show("Please enter a program name.", "Validation Error",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
-                YearTextBox.Focus();
+                ProgramNameTextBox.Focus();
                 return false;
             }
 
-            // validate number
-            if (string.IsNullOrWhiteSpace(NumberTextBox.Text) ||
-                !int.TryParse(NumberTextBox.Text, out int number) ||
-                number <= 0 || number > 9999)
+            // check program name length
+            if (ProgramNameTextBox.Text.Length > MAX_PROGRAM_NAME_LENGTH)
             {
-                MessageBox.Show("Please enter a valid student number (0001-9999).", "Validation Error",
+                MessageBox.Show($"Program name cannot exceed {MAX_PROGRAM_NAME_LENGTH} characters.", "Validation Error",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
-                NumberTextBox.Focus();
+                ProgramNameTextBox.Focus();
                 return false;
             }
 
-            // validate first name
-            if (string.IsNullOrWhiteSpace(FirstNameTextBox.Text))
+            // check if program code is empty
+            if (string.IsNullOrWhiteSpace(ProgramCodeTextBox.Text))
             {
-                MessageBox.Show("Please enter a first name.", "Validation Error",
+                MessageBox.Show("Please enter a program code.", "Validation Error",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
-                FirstNameTextBox.Focus();
+                ProgramCodeTextBox.Focus();
                 return false;
             }
 
-            if (FirstNameTextBox.Text.Length > MAX_FIRSTNAME_LENGTH)
+            // check minimum length for program code
+            if (ProgramCodeTextBox.Text.Length < 2)
             {
-                MessageBox.Show($"First name cannot exceed {MAX_FIRSTNAME_LENGTH} characters.", "Validation Error",
+                MessageBox.Show("Program code must be at least 2 characters.", "Validation Error",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
-                FirstNameTextBox.Focus();
+                ProgramCodeTextBox.Focus();
                 return false;
             }
 
-            // validate last name
-            if (string.IsNullOrWhiteSpace(LastNameTextBox.Text))
+            // check maximum length for program code
+            if (ProgramCodeTextBox.Text.Length > MAX_PROGRAM_CODE_LENGTH)
             {
-                MessageBox.Show("Please enter a last name.", "Validation Error",
+                MessageBox.Show($"Program code cannot exceed {MAX_PROGRAM_CODE_LENGTH} characters.", "Validation Error",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
-                LastNameTextBox.Focus();
+                ProgramCodeTextBox.Focus();
                 return false;
             }
 
-            if (LastNameTextBox.Text.Length > MAX_LASTNAME_LENGTH)
-            {
-                MessageBox.Show($"Last name cannot exceed {MAX_LASTNAME_LENGTH} characters.", "Validation Error",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                LastNameTextBox.Focus();
-                return false;
-            }
-
-            // validate year level selection
-            if (YearLevelComboBox.SelectedItem == null)
-            {
-                MessageBox.Show("Please select a year level.", "Validation Error",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                YearLevelComboBox.Focus();
-                return false;
-            }
-
-            // validate gender selection
-            if (GenderComboBox.SelectedItem == null)
-            {
-                MessageBox.Show("Please select a gender.", "Validation Error",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                GenderComboBox.Focus();
-                return false;
-            }
-
-            // validate program code selection
-            if (ProgramCodeComboBox.SelectedItem == null)
-            {
-                MessageBox.Show("Please select a program code.", "Validation Error",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                ProgramCodeComboBox.Focus();
-                return false;
-            }
-
-            // validate college code selection
-            if (CollegeCodeComboBox.SelectedItem == null || CollegeCodeComboBox.SelectedItem.ToString() == "Select College")
+            // check if college code is selected
+            if (CollegeCodeComboBox.SelectedItem == null)
             {
                 MessageBox.Show("Please select a college code.", "Validation Error",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
