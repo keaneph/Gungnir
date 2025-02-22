@@ -57,7 +57,7 @@
                                  VerticalAlignment="Center" 
                                  Margin="10,0"/>
                         <TextBox x:Name="NumberTextBox" 
-                                Width="125"
+                                Width="120"
                                 Style="{StaticResource BaseTextBoxStyle}"
                                 PreviewTextInput="NumberTextBox_PreviewTextInput"/>
                     </StackPanel>
