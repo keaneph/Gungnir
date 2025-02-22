@@ -1,5 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:local="clr-namespace:sis_app">
 
     <!-- color palette --> 
     <SolidColorBrush x:Key="Purple" Color="#7160E8"/>
@@ -578,5 +579,18 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <!-- converters -->
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    <local:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
+
+    <!-- style for combobox cells in the table/grid -->
+    <Style x:Key="TableCellComboBoxStyle" TargetType="ComboBox" BasedOn="{StaticResource BaseComboBoxStyle}">
+        <Setter Property="Height" Value="25"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="BorderThickness" Value="0,0,1,1"/>
     </Style>
 </ResourceDictionary>
