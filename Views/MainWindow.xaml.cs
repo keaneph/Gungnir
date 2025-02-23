@@ -31,24 +31,39 @@ namespace sis_app.Views
         {
             InitializeComponent();
 
-            CurrentUser = username; // Set the current user from login
+            try
+            {
+                CurrentUser = username; // Set the current user from login
 
-            _collegeDataService = new CollegeDataService("colleges.csv") { CurrentUser = CurrentUser };
-            _programDataService = new ProgramDataService("programs.csv") { CurrentUser = CurrentUser };
+                // Initialize all services first
+                _collegeDataService = new CollegeDataService("colleges.csv") { CurrentUser = CurrentUser };
+                _programDataService = new ProgramDataService("programs.csv") { CurrentUser = CurrentUser };
+                _studentDataService = new StudentDataService("students.csv") { CurrentUser = CurrentUser };
 
-            _addCollegeControl = new AddCollegeControl(_collegeDataService);
-            _addProgramControl = new AddProgramControl(_programDataService, _collegeDataService);
-            _viewCollegesControl = new ViewCollegesControl(_collegeDataService);
-            _viewProgramsControl = new ViewProgramsControl(_programDataService);
-            _dashboardView = new DashboardView();
-            _studentDataService = new StudentDataService("students.csv") { CurrentUser = CurrentUser };
-            _addStudentControl = new AddStudentControl(_studentDataService, _collegeDataService, _programDataService);
-            _viewStudentControl = new ViewStudentControl(_studentDataService);
+                // Then initialize all controls
+                _dashboardView = new DashboardView();
+                _addCollegeControl = new AddCollegeControl(_collegeDataService);
+                _addProgramControl = new AddProgramControl(_programDataService, _collegeDataService);
+                _viewCollegesControl = new ViewCollegesControl(_collegeDataService);
+                _viewProgramsControl = new ViewProgramsControl(_programDataService, _studentDataService)
+                {
+                    CurrentUser = CurrentUser
+                };
+                _addStudentControl = new AddStudentControl(_studentDataService, _collegeDataService, _programDataService);
+                _viewStudentControl = new ViewStudentControl(_studentDataService, _programDataService, _collegeDataService);
 
-            LoginStatus.Text = CurrentUser;
-            ProfileName.Text = CurrentUser;
+                // Set user information
+                LoginStatus.Text = CurrentUser;
+                ProfileName.Text = CurrentUser;
 
-            MainContent.Content = _dashboardView;
+                // Set initial content
+                MainContent.Content = _dashboardView;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error initializing application: {ex.Message}", "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void UpdateDirectory(string page)
@@ -111,7 +126,7 @@ namespace sis_app.Views
 
         private void NavigateHistory_Click(object sender, RoutedEventArgs e)
         {
-            // Implement logic for history page here
+            MainContent.Content = new HistoryView();
             UpdateDirectory("History");
         }
 

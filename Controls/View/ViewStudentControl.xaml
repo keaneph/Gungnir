@@ -32,8 +32,8 @@
                         <ComboBoxItem Content="Alphabetical First Name"/>
                         <ComboBoxItem Content="Alphabetical Last Name"/>
                         <ComboBoxItem Content="ID Number"/>
-						<ComboBoxItem Content="Year Level"/>
-						<ComboBoxItem Content="Gender"/>
+                        <ComboBoxItem Content="Year Level"/>
+                        <ComboBoxItem Content="Gender"/>
                         <ComboBoxItem Content="Program Code"/>
                         <ComboBoxItem Content="College Code"/>
                         <ComboBoxItem Content="Alphabetical User"/>
@@ -58,6 +58,8 @@
                                         <TextBox Text="{Binding IDNumber, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
                                                 IsEnabled="{Binding ElementName=EditModeToggleButton, Path=IsChecked}"
                                                 Style="{StaticResource TableCellTextBoxStyle}"
+                                                PreviewTextInput="IDNumberTextBox_PreviewTextInput"
+                                                TextChanged="IDNumberTextBox_TextChanged"
                                                 Width="{Binding Width, RelativeSource={RelativeSource AncestorType=GridViewColumn}}"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
@@ -72,6 +74,8 @@
                                         <TextBox Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
                                                 IsEnabled="{Binding ElementName=EditModeToggleButton, Path=IsChecked}"
                                                 Style="{StaticResource TableCellTextBoxStyle}"
+                                                PreviewTextInput="FirstNameTextBox_PreviewTextInput"
+                                                TextChanged="FirstNameTextBox_TextChanged"
                                                 Width="{Binding Width, RelativeSource={RelativeSource AncestorType=GridViewColumn}}"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
@@ -86,38 +90,66 @@
                                         <TextBox Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
                                                 IsEnabled="{Binding ElementName=EditModeToggleButton, Path=IsChecked}"
                                                 Style="{StaticResource TableCellTextBoxStyle}"
+                                                PreviewTextInput="LastNameTextBox_PreviewTextInput"
+                                                TextChanged="LastNameTextBox_TextChanged"
                                                 Width="{Binding Width, RelativeSource={RelativeSource AncestorType=GridViewColumn}}"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
 
-							<GridViewColumn Header="Year Level" Width="80">
-								<GridViewColumn.HeaderContainerStyle>
-									<Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource HeaderStyle}"/>
-								</GridViewColumn.HeaderContainerStyle>
-								<GridViewColumn.CellTemplate>
-									<DataTemplate>
-										<TextBox Text="{Binding YearLevel, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-												IsEnabled="{Binding ElementName=EditModeToggleButton, Path=IsChecked}"
-												Style="{StaticResource TableCellTextBoxStyle}"
-												Width="{Binding Width, RelativeSource={RelativeSource AncestorType=GridViewColumn}}"/>
-									</DataTemplate>
-								</GridViewColumn.CellTemplate>
-							</GridViewColumn>
+                            <GridViewColumn Header="Year Level" Width="80">
+                                <GridViewColumn.HeaderContainerStyle>
+                                    <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource HeaderStyle}"/>
+                                </GridViewColumn.HeaderContainerStyle>
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <!-- Year Level ComboBox -->
+                                            <ComboBox ItemsSource="{Binding DataContext._yearLevels, 
+                          RelativeSource={RelativeSource AncestorType={x:Type local:ViewStudentControl}}}"
+                          SelectedItem="{Binding YearLevel, UpdateSourceTrigger=PropertyChanged}"
+                          IsEnabled="{Binding ElementName=EditModeToggleButton, Path=IsChecked}"
+                          Style="{StaticResource TableCellComboBoxStyle}"
+                          Width="{Binding Width, RelativeSource={RelativeSource AncestorType=GridViewColumn}}"
+                          Visibility="{Binding ElementName=EditModeToggleButton, Path=IsChecked, 
+                          Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
-							<GridViewColumn Header="Gender" Width="80">
-								<GridViewColumn.HeaderContainerStyle>
-									<Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource HeaderStyle}"/>
-								</GridViewColumn.HeaderContainerStyle>
-								<GridViewColumn.CellTemplate>
-									<DataTemplate>
-										<TextBox Text="{Binding Gender, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-												IsEnabled="{Binding ElementName=EditModeToggleButton, Path=IsChecked}"
-												Style="{StaticResource TableCellTextBoxStyle}"
-												Width="{Binding Width, RelativeSource={RelativeSource AncestorType=GridViewColumn}}"/>
-									</DataTemplate>
-								</GridViewColumn.CellTemplate>
-							</GridViewColumn>
+                                            <!-- Year Level TextBlock -->
+                                            <TextBlock Text="{Binding YearLevel}"
+                          Style="{StaticResource TableCellStyle}"
+                          Width="80"
+                          Visibility="{Binding ElementName=EditModeToggleButton, Path=IsChecked, 
+                          Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn Header="Gender" Width="80">
+                                <GridViewColumn.HeaderContainerStyle>
+                                    <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource HeaderStyle}"/>
+                                </GridViewColumn.HeaderContainerStyle>
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <ComboBox ItemsSource="{Binding DataContext._genders,
+                                                      RelativeSource={RelativeSource AncestorType={x:Type local:ViewStudentControl}}}"
+                                                      SelectedItem="{Binding Gender, UpdateSourceTrigger=PropertyChanged}"
+                                                      IsEnabled="{Binding ElementName=EditModeToggleButton, Path=IsChecked}"
+                                                      Style="{StaticResource TableCellComboBoxStyle}"
+                                                      Width="{Binding Width, RelativeSource={RelativeSource AncestorType=GridViewColumn}}"
+                                                      Visibility="{Binding ElementName=EditModeToggleButton, Path=IsChecked, 
+                                                      Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+                                            <TextBlock Text="{Binding Gender}"
+                                                      Style="{StaticResource TableCellStyle}"
+                                                      Width="80"
+                                                      Visibility="{Binding ElementName=EditModeToggleButton, Path=IsChecked, 
+                                                                 Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
 
                             <GridViewColumn Header="Program Code" Width="100">
                                 <GridViewColumn.HeaderContainerStyle>
@@ -125,10 +157,23 @@
                                 </GridViewColumn.HeaderContainerStyle>
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBox Text="{Binding ProgramCode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
-                                                IsEnabled="{Binding ElementName=EditModeToggleButton, Path=IsChecked}"
-                                                Style="{StaticResource TableCellTextBoxStyle}"
-                                                Width="{Binding Width, RelativeSource={RelativeSource AncestorType=GridViewColumn}}"/>
+                                        <Grid>
+                                            <ComboBox ItemsSource="{Binding DataContext._availableProgramCodes,
+                                                      RelativeSource={RelativeSource AncestorType={x:Type local:ViewStudentControl}}}"
+                                                      SelectedItem="{Binding ProgramCode, UpdateSourceTrigger=PropertyChanged}"
+                                                      IsEnabled="{Binding ElementName=EditModeToggleButton, Path=IsChecked}"
+                                                      Style="{StaticResource TableCellComboBoxStyle}"
+                                                      SelectionChanged="ProgramCodeComboBox_SelectionChanged"
+                                                      Width="{Binding Width, RelativeSource={RelativeSource AncestorType=GridViewColumn}}"
+                                                      Visibility="{Binding ElementName=EditModeToggleButton, Path=IsChecked, 
+                                                      Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+                                            <TextBlock Text="{Binding ProgramCode}"
+                                                      Style="{StaticResource TableCellStyle}"
+                                                      Width="100"
+                                                      Visibility="{Binding ElementName=EditModeToggleButton, Path=IsChecked, 
+                                                                 Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+                                        </Grid>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
@@ -139,10 +184,9 @@
                                 </GridViewColumn.HeaderContainerStyle>
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBox Text="{Binding CollegeCode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
-                                                IsEnabled="{Binding ElementName=EditModeToggleButton, Path=IsChecked}"
-                                                Style="{StaticResource TableCellTextBoxStyle}"
-                                                Width="{Binding Width, RelativeSource={RelativeSource AncestorType=GridViewColumn}}"/>
+                                        <TextBlock Text="{Binding CollegeCode}"
+                                                 Style="{StaticResource TableCellStyle}"
+                                                 Width="100"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>

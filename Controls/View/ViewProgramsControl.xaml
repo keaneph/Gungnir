@@ -66,12 +66,12 @@
                                 </GridViewColumn.HeaderContainerStyle>
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBox Text="{Binding Code, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                                IsEnabled="{Binding ElementName=EditModeToggleButton, Path=IsChecked}"
-                                                Style="{StaticResource TableCellTextBoxStyle}"
-                                                PreviewTextInput="ProgramCodeTextBox_PreviewTextInput"
-                                                TextChanged="ProgramCodeTextBox_TextChanged"
-                                                Width="{Binding Width, RelativeSource={RelativeSource AncestorType=GridViewColumn}}"/>
+                                        <TextBox Text="{Binding Code, UpdateSourceTrigger=PropertyChanged}"
+                                                 IsEnabled="{Binding ElementName=EditModeToggleButton, Path=IsChecked}"
+                                                 PreviewTextInput="ProgramCodeTextBox_PreviewTextInput"
+                                                 TextChanged="ProgramCodeTextBox_TextChanged"
+                                                 Style="{StaticResource TableCellTextBoxStyle}"
+                                                 Width="{Binding Width, RelativeSource={RelativeSource AncestorType=GridViewColumn}}"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>

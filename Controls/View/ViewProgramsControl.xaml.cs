@@ -21,22 +21,40 @@ namespace sis_app.Controls.View
         private const int MAX_PROGRAM_CODE_LENGTH = 7;
 
         // services for handling data operations
-        private ProgramDataService _programDataService;
-        private CollegeDataService _collegeDataService;
+        private readonly ProgramDataService _programDataService;
+        private readonly StudentDataService _studentDataService;
+        private readonly CollegeDataService _collegeDataService;
         private ObservableCollection<Program> _programs;
-        private Dictionary<Program, Program> _originalProgramData = new Dictionary<Program, Program>();
+        private Dictionary<Program, Program> _originalProgramData;
         private List<string> _availableCollegeCodes;
+        public string CurrentUser { get; set; }
 
-        public ViewProgramsControl(ProgramDataService programDataService)
+        public ViewProgramsControl(ProgramDataService programDataService, StudentDataService studentDataService)
         {
             InitializeComponent();
-            _programDataService = programDataService;
+
+            // Initialize services
+            _programDataService = programDataService ?? throw new ArgumentNullException(nameof(programDataService));
+            _studentDataService = studentDataService ?? throw new ArgumentNullException(nameof(studentDataService));
             _collegeDataService = new CollegeDataService("colleges.csv");
-            _programs = new ObservableCollection<Program>(_programDataService.GetAllPrograms());
+
+            // Initialize collections
+            _programs = new ObservableCollection<Program>();
+            _originalProgramData = new Dictionary<Program, Program>();
+            _availableCollegeCodes = new List<string>();
+
+            // Set ItemsSource
             ProgramListView.ItemsSource = _programs;
 
+            // Load initial data
+            LoadPrograms();
             LoadAvailableCollegeCodes();
-            SortComboBox.SelectedIndex = 0;
+
+            // Set default sort
+            if (SortComboBox != null)
+            {
+                SortComboBox.SelectedIndex = 0;
+            }
         }
 
         // loads available college codes for combobox
@@ -50,13 +68,22 @@ namespace sis_app.Controls.View
 
         public void LoadPrograms()
         {
-            List<Program> programs = _programDataService.GetAllPrograms();
-            _programs.Clear();
-            foreach (var program in programs)
+            try
             {
-                _programs.Add(program);
+                var programs = _programDataService.GetAllPrograms();
+                _programs.Clear();
+                foreach (var program in programs)
+                {
+                    _programs.Add(program);
+                }
+                ProgramListView.ItemsSource = _programs;
+                SortPrograms();
             }
-            SortPrograms();
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading programs: {ex.Message}", "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         // validates program name input to allow only letters
@@ -92,26 +119,48 @@ namespace sis_app.Controls.View
             if (sender is TextBox textBox)
             {
                 int caretIndex = textBox.CaretIndex;
-                textBox.Text = textBox.Text.ToUpper();
+                string newText = textBox.Text.ToUpper();
 
-                if (textBox.Text.Length > MAX_PROGRAM_CODE_LENGTH)
+                // Remove any invalid characters
+                newText = new string(newText.Where(c => char.IsLetter(c)).ToArray());
+
+                if (newText.Length > MAX_PROGRAM_CODE_LENGTH)
                 {
-                    textBox.Text = textBox.Text.Substring(0, MAX_PROGRAM_CODE_LENGTH);
+                    newText = newText.Substring(0, MAX_PROGRAM_CODE_LENGTH);
                     caretIndex = MAX_PROGRAM_CODE_LENGTH;
                 }
 
-                textBox.CaretIndex = caretIndex;
+                textBox.Text = newText;
+                textBox.CaretIndex = Math.Min(caretIndex, newText.Length);
             }
         }
 
         private void ClearProgramsButton_Click(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult result = MessageBox.Show("Are you sure you want to clear all program data?", "Confirmation",
-                MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var students = _studentDataService.GetAllStudents();
+            var affectedStudents = students.Where(s => s.ProgramCode != "DELETED").ToList();
+
+            string message = "Are you sure you want to clear all program data?";
+            if (affectedStudents.Any())
+            {
+                message += $"\nWarning: {affectedStudents.Count} students will be affected.";
+            }
+
+            MessageBoxResult result = MessageBox.Show(message, "Confirmation",
+                MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
             if (result == MessageBoxResult.Yes)
             {
                 try
                 {
+                    // Update all affected students
+                    foreach (var student in affectedStudents)
+                    {
+                        student.ProgramCode = "DELETED";
+                        student.CollegeCode = "DELETED";
+                        _studentDataService.UpdateStudent(student, student);
+                    }
+
                     File.WriteAllText("programs.csv", string.Empty);
                     LoadPrograms();
                 }
@@ -162,47 +211,128 @@ namespace sis_app.Controls.View
 
         private void EditModeToggleButton_Unchecked(object sender, RoutedEventArgs e)
         {
-            var programsCopy = _programs.ToList();
-
-            foreach (var program in programsCopy)
+            try
             {
-                if (_originalProgramData.ContainsKey(program))
+                foreach (var program in _programs.ToList())
                 {
-                    Program originalProgram = _originalProgramData[program];
+                    if (!_originalProgramData.TryGetValue(program, out Program originalProgram))
+                        continue;
 
-                    if (program.Name != originalProgram.Name ||
-                        program.Code != originalProgram.Code ||
-                        program.CollegeCode != originalProgram.CollegeCode)
+                    bool isChanged = program.Name != originalProgram.Name ||
+                                   program.Code != originalProgram.Code ||
+                                   program.CollegeCode != originalProgram.CollegeCode;
+
+                    if (!isChanged)
+                        continue;
+
+                    // Validate the edited data
+                    if (!ValidateEditedData(program))
                     {
-                        // validate the edited data
-                        if (!ValidateEditedData(program))
-                        {
-                            // if validation fails, revert changes
-                            program.Name = originalProgram.Name;
-                            program.Code = originalProgram.Code;
-                            program.CollegeCode = originalProgram.CollegeCode;
-                            continue;
-                        }
-
-                        // check for duplicate code
-                        var existingProgram = _programs.FirstOrDefault(p =>
-                            p != program &&
-                            p.Code.Equals(program.Code, StringComparison.OrdinalIgnoreCase));
-
-                        if (existingProgram != null)
-                        {
-                            MessageBox.Show($"A program with code '{program.Code}' already exists.", "Error",
-                                MessageBoxButton.OK, MessageBoxImage.Error);
-                            program.Code = originalProgram.Code;
-                            continue;
-                        }
-
-                        _programDataService.UpdateProgram(originalProgram, program);
+                        RevertChanges(program, originalProgram);
+                        continue;
                     }
+
+                    // Check for duplicate code
+                    if (IsDuplicateProgramCode(program, originalProgram))
+                    {
+                        RevertChanges(program, originalProgram);
+                        continue;
+                    }
+
+                    // Update students if program code has changed
+                    if (!string.Equals(program.Code, originalProgram.Code, StringComparison.OrdinalIgnoreCase))
+                    {
+                        UpdateStudentsForProgramCodeChange(originalProgram.Code, program.Code, program.CollegeCode);
+                    }
+                    // Update students if only college code has changed
+                    else if (!string.Equals(program.CollegeCode, originalProgram.CollegeCode, StringComparison.OrdinalIgnoreCase))
+                    {
+                        UpdateStudentsForCollegeCodeChange(program.Code, program.CollegeCode);
+                    }
+
+                    // Update the program in the database
+                    _programDataService.UpdateProgram(originalProgram, program);
                 }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error updating programs: {ex.Message}", "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoadPrograms();
+            }
+        }
 
-            LoadPrograms();
+        private void RevertChanges(Program program, Program originalProgram)
+        {
+            program.Name = originalProgram.Name;
+            program.Code = originalProgram.Code;
+            program.CollegeCode = originalProgram.CollegeCode;
+        }
+
+        private bool IsDuplicateProgramCode(Program program, Program originalProgram)
+        {
+            var existingProgram = _programs.FirstOrDefault(p =>
+                p != program &&
+                p.Code.Equals(program.Code, StringComparison.OrdinalIgnoreCase));
+
+            if (existingProgram != null)
+            {
+                MessageBox.Show($"A program with code '{program.Code}' already exists.", "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                return true;
+            }
+            return false;
+        }
+
+        private void UpdateStudentsForProgramCodeChange(string oldCode, string newCode, string newCollegeCode)
+        {
+            var students = _studentDataService.GetAllStudents()
+                .Where(s => s.ProgramCode.Equals(oldCode, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            if (students.Any())
+            {
+                MessageBox.Show(
+                    $"Program code changed from '{oldCode}' to '{newCode}'. " +
+                    $"{students.Count} students will be updated.",
+                    "Students Affected",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+
+                foreach (var student in students)
+                {
+                    student.ProgramCode = newCode;
+                    student.CollegeCode = newCollegeCode;
+                    _studentDataService.UpdateStudent(student, student);
+                }
+            }
+        }
+
+        private void UpdateStudentsForCollegeCodeChange(string programCode, string newCollegeCode)
+        {
+            var students = _studentDataService.GetAllStudents()
+                .Where(s => s.ProgramCode.Equals(programCode, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            foreach (var student in students)
+            {
+                student.CollegeCode = newCollegeCode;
+                _studentDataService.UpdateStudent(student, student);
+            }
+        }
+
+        private bool ValidateProgramCode(string programCode)
+        {
+            if (string.IsNullOrWhiteSpace(programCode))
+                return false;
+
+            if (programCode.Length < 2 || programCode.Length > MAX_PROGRAM_CODE_LENGTH)
+                return false;
+
+            return programCode.All(char.IsLetter);
         }
 
         // validates the edited data
@@ -295,14 +425,33 @@ namespace sis_app.Controls.View
             var selectedItems = ProgramListView.SelectedItems.OfType<Program>().ToList();
             if (selectedItems.Any())
             {
-                MessageBoxResult result = MessageBox.Show(
-                    $"Are you sure you want to delete the selected {selectedItems.Count} programs?",
-                    "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                // Check for affected students
+                var students = _studentDataService.GetAllStudents();
+                var affectedStudents = students.Where(s =>
+                    selectedItems.Any(p => p.Code.Equals(s.ProgramCode, StringComparison.OrdinalIgnoreCase))).ToList();
+
+                string message = $"Are you sure you want to delete the selected {selectedItems.Count} programs?";
+                if (affectedStudents.Any())
+                {
+                    message += $"\nWarning: {affectedStudents.Count} students are enrolled in these programs and will be affected.";
+                }
+
+                MessageBoxResult result = MessageBox.Show(message, "Confirmation",
+                    MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
                 if (result == MessageBoxResult.Yes)
                 {
                     foreach (var program in selectedItems)
                     {
+                        // Update affected students
+                        foreach (var student in affectedStudents.Where(s =>
+                            s.ProgramCode.Equals(program.Code, StringComparison.OrdinalIgnoreCase)))
+                        {
+                            student.ProgramCode = "DELETED";
+                            student.CollegeCode = "DELETED";
+                            _studentDataService.UpdateStudent(student, student);
+                        }
+
                         _programDataService.DeleteProgram(program);
                         _programs.Remove(program);
                     }
