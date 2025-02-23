@@ -34,6 +34,8 @@ namespace sis_app.Controls.View
         private readonly ObservableCollection<Program> _programs;
         private readonly Dictionary<Program, Program> _originalProgramData;
         private List<string> _availableCollegeCodes;
+        private ObservableCollection<Program> _allPrograms;
+        private string _currentSearchText = string.Empty;
         #endregion
 
         #region Public Properties
@@ -58,6 +60,7 @@ namespace sis_app.Controls.View
 
             // Initialize collections
             _programs = new ObservableCollection<Program>();
+            _allPrograms = new ObservableCollection<Program>();
             _originalProgramData = new Dictionary<Program, Program>();
             _availableCollegeCodes = new List<string>();
 
@@ -94,12 +97,23 @@ namespace sis_app.Controls.View
             try
             {
                 var programs = _programDataService.GetAllPrograms();
+                _allPrograms = new ObservableCollection<Program>(programs);
+
                 _programs.Clear();
                 foreach (var program in programs)
                 {
                     _programs.Add(program);
                 }
-                SortPrograms();
+
+                // Apply any existing search filter
+                if (!string.IsNullOrWhiteSpace(_currentSearchText))
+                {
+                    ApplySearch();
+                }
+                else
+                {
+                    SortPrograms();
+                }
             }
             catch (Exception ex)
             {
@@ -276,6 +290,11 @@ namespace sis_app.Controls.View
         private void EditModeToggleButton_Unchecked(object sender, RoutedEventArgs e)
         {
             ProcessEditedData();
+            // Reapply search after edit mode
+            if (!string.IsNullOrWhiteSpace(_currentSearchText))
+            {
+                ApplySearch();
+            }
         }
 
         private void StoreOriginalData()
@@ -352,6 +371,54 @@ namespace sis_app.Controls.View
             current.CollegeCode = original.CollegeCode;
         }
         #endregion
+
+        #region Search Functionality
+        public void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            _currentSearchText = SearchBox.Text.Trim().ToLower();
+            ApplySearch();
+        }
+
+        private void ApplySearch()
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(_currentSearchText))
+                {
+                    _programs.Clear();
+                    foreach (var program in _allPrograms)
+                    {
+                        _programs.Add(program);
+                    }
+                }
+                else
+                {
+                    var filteredPrograms = _allPrograms.Where(program =>
+                        program.Name.ToLower().Contains(_currentSearchText) ||
+                        program.Code.ToLower().Contains(_currentSearchText) ||
+                        program.CollegeCode.ToLower().Contains(_currentSearchText)
+                    ).ToList();
+
+                    _programs.Clear();
+                    foreach (var program in filteredPrograms)
+                    {
+                        _programs.Add(program);
+                    }
+                }
+
+                SortPrograms();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error during search: {ex.Message}",
+                    "Search Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
+            }
+        }
+
 
         #region Data Management Methods
         private bool ValidateAndUpdateProgram(Program program, Program originalProgram)
@@ -447,6 +514,8 @@ namespace sis_app.Controls.View
             }
         }
 
+        #endregion
+
         private void ClearProgramsButton_Click(object sender, RoutedEventArgs e)
         {
             if (ConfirmClearAll())
@@ -490,6 +559,7 @@ namespace sis_app.Controls.View
         {
             _programDataService.DeleteProgram(program);
             _programs.Remove(program);
+            _allPrograms.Remove(program);  // Add this line
 
             var affectedStudents = _studentDataService.GetAllStudents()
                 .Where(s => s.ProgramCode.Equals(program.Code, StringComparison.OrdinalIgnoreCase))

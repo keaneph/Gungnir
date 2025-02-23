@@ -41,6 +41,8 @@ namespace sis_app.Controls.View
         private readonly List<string> _availableProgramCodes;
         private readonly List<int> _yearLevels;
         private readonly List<string> _genders;
+        private ObservableCollection<Student> _allStudents;
+        private string _currentSearchText = string.Empty;
         #endregion
 
         #region Public Properties
@@ -55,9 +57,9 @@ namespace sis_app.Controls.View
 
         #region Constructor and Initialization
         public ViewStudentControl(
-            StudentDataService studentDataService,
-            ProgramDataService programDataService,
-            CollegeDataService collegeDataService)
+    StudentDataService studentDataService,
+    ProgramDataService programDataService,
+    CollegeDataService collegeDataService)
         {
             InitializeComponent();
 
@@ -68,6 +70,7 @@ namespace sis_app.Controls.View
 
             // Initialize collections
             _students = new ObservableCollection<Student>();
+            _allStudents = new ObservableCollection<Student>();  // Add this line
             _originalStudentData = new Dictionary<Student, Student>();
             _availableProgramCodes = new List<string>();
             _yearLevels = new List<int> { 1, 2, 3, 4 };
@@ -113,6 +116,8 @@ namespace sis_app.Controls.View
                 var programs = _programDataService.GetAllPrograms()
                     .ToDictionary(p => p.Code.ToUpper(), StringComparer.OrdinalIgnoreCase);
 
+                _allStudents = new ObservableCollection<Student>(students);
+
                 _students.Clear();
                 foreach (var student in students)
                 {
@@ -120,7 +125,15 @@ namespace sis_app.Controls.View
                     _students.Add(student);
                 }
 
-                SortStudents();
+                // Apply any existing search filter
+                if (!string.IsNullOrWhiteSpace(_currentSearchText))
+                {
+                    ApplySearch();
+                }
+                else
+                {
+                    SortStudents();
+                }
             }
             catch (Exception ex)
             {
@@ -317,6 +330,57 @@ namespace sis_app.Controls.View
         }
         #endregion
 
+        #region Search Functionality
+        public void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            _currentSearchText = SearchBox.Text.Trim().ToLower();
+            ApplySearch();
+        }
+
+        private void ApplySearch()
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(_currentSearchText))
+                {
+                    _students.Clear();
+                    foreach (var student in _allStudents)
+                    {
+                        _students.Add(student);
+                    }
+                }
+                else
+                {
+                    var filteredStudents = _allStudents.Where(student =>
+                        student.FirstName.ToLower().Contains(_currentSearchText) ||
+                        student.LastName.ToLower().Contains(_currentSearchText) ||
+                        student.IDNumber.ToLower().Contains(_currentSearchText) ||
+                        student.ProgramCode.ToLower().Contains(_currentSearchText) ||
+                        student.CollegeCode.ToLower().Contains(_currentSearchText) ||
+                        student.Gender.ToLower().Contains(_currentSearchText) ||
+                        student.YearLevel.ToString().Contains(_currentSearchText)
+                    ).ToList();
+
+                    _students.Clear();
+                    foreach (var student in filteredStudents)
+                    {
+                        _students.Add(student);
+                    }
+                }
+
+                SortStudents();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error during search: {ex.Message}",
+                    "Search Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
+            }
+        }
+
         #region Text Change Handlers
         private void IDNumberTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -387,6 +451,11 @@ namespace sis_app.Controls.View
         private void EditModeToggleButton_Unchecked(object sender, RoutedEventArgs e)
         {
             ProcessEditedData();
+            // Reapply search after edit mode
+            if (!string.IsNullOrWhiteSpace(_currentSearchText))
+            {
+                ApplySearch();
+            }
         }
 
         private void StoreOriginalData()
@@ -624,6 +693,7 @@ namespace sis_app.Controls.View
             {
                 _studentDataService.DeleteStudent(student);
                 _students.Remove(student);
+                _allStudents.Remove(student);  
             }
         }
 
@@ -748,25 +818,31 @@ namespace sis_app.Controls.View
                 case "Date and Time Modified (Newest First)":
                     SortList(s => s.DateTime, ListSortDirection.Descending);
                     break;
+                case "ID Number (Ascending)":
+                    SortList(s => s.IDNumber, ListSortDirection.Ascending);
+                    break;
+                case "ID Number (Descending)":
+                    SortList(s => s.IDNumber, ListSortDirection.Descending);
+                    break;
                 case "Alphabetical First Name":
                     SortList(s => s.FirstName, ListSortDirection.Ascending);
                     break;
                 case "Alphabetical Last Name":
                     SortList(s => s.LastName, ListSortDirection.Ascending);
                     break;
-                case "ID Number":
-                    SortList(s => s.IDNumber, ListSortDirection.Ascending);
-                    break;
-                case "Year Level":
+                case "Year Level (Ascending)":
                     SortList(s => s.YearLevel, ListSortDirection.Ascending);
                     break;
-                case "Gender":
+                case "Year Level (Descending)":
+                    SortList(s => s.YearLevel, ListSortDirection.Descending);
+                    break;
+                case "Alphabetical Gender":
                     SortList(s => s.Gender, ListSortDirection.Ascending);
                     break;
-                case "Program Code":
+                case "Alphabetical Program Code":
                     SortList(s => s.ProgramCode, ListSortDirection.Ascending);
                     break;
-                case "College Code":
+                case "Alphabetical College Code":
                     SortList(s => s.CollegeCode, ListSortDirection.Ascending);
                     break;
                 case "Alphabetical User":
@@ -851,3 +927,4 @@ namespace sis_app.Controls.View
         #endregion
     }
 }
+#endregion

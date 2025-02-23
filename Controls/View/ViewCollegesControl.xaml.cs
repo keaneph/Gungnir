@@ -100,32 +100,41 @@ namespace sis_app.Controls.View
 
         private void ApplySearch()
         {
-            if (string.IsNullOrWhiteSpace(_currentSearchText))
+            try
             {
-                // If search is empty, restore all colleges
-                _colleges.Clear();
-                foreach (var college in _allColleges)
+                if (string.IsNullOrWhiteSpace(_currentSearchText))
                 {
-                    _colleges.Add(college);
+                    _colleges.Clear();
+                    foreach (var college in _allColleges)
+                    {
+                        _colleges.Add(college);
+                    }
                 }
+                else
+                {
+                    var filteredColleges = _allColleges.Where(college =>
+                        college.Name.ToLower().Contains(_currentSearchText) ||
+                        college.Code.ToLower().Contains(_currentSearchText)
+                    ).ToList();
+
+                    _colleges.Clear();
+                    foreach (var college in filteredColleges)
+                    {
+                        _colleges.Add(college);
+                    }
+                }
+
+                SortColleges();
             }
-            else
+            catch (Exception ex)
             {
-                // Filter colleges based on search text
-                var filteredColleges = _allColleges.Where(college =>
-                    college.Name.ToLower().Contains(_currentSearchText) ||
-                    college.Code.ToLower().Contains(_currentSearchText)
-                ).ToList();
-
-                _colleges.Clear();
-                foreach (var college in filteredColleges)
-                {
-                    _colleges.Add(college);
-                }
+                MessageBox.Show(
+                    $"Error during search: {ex.Message}",
+                    "Search Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
             }
-
-            // Maintain current sort after search
-            SortColleges();
         }
         #endregion
 
@@ -208,6 +217,11 @@ namespace sis_app.Controls.View
         private void EditModeToggleButton_Unchecked(object sender, RoutedEventArgs e)
         {
             ProcessEditedData();
+            // Reapply search after edit mode
+            if (!string.IsNullOrWhiteSpace(_currentSearchText))
+            {
+                ApplySearch();
+            }
         }
 
         private void StoreOriginalData()
@@ -436,6 +450,7 @@ namespace sis_app.Controls.View
         {
             _collegeDataService.DeleteCollege(college);
             _colleges.Remove(college);
+            _allColleges.Remove(college);  // Add this line
 
             var affectedPrograms = _programDataService.GetAllPrograms()
                 .Where(p => p.CollegeCode.Equals(college.Code, StringComparison.OrdinalIgnoreCase))
