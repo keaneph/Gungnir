@@ -3,73 +3,111 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using sis_app.Services;    // For the services
-using sis_app.Controls.Add;    // For Add controls
-using sis_app.Controls.View;   // For View controls
-using sis_app.Views;      // For DashboardView and AboutView
+using sis_app.Services;
+using sis_app.Controls.Add;
+using sis_app.Controls.View;
+using sis_app.Views;
 
 namespace sis_app.Views
 {
+    /// <summary>
+    /// Main window of the Student Information System application.
+    /// Handles navigation and initialization of all services and controls.
+    /// </summary>
     public partial class MainWindow : Window
     {
+        #region Constants
+        private const string DEFAULT_USER = "Admin";
+        #endregion
+
+        #region Private Fields
         private CollegeDataService _collegeDataService;
         private ProgramDataService _programDataService;
+        private StudentDataService _studentDataService;
+
         private AddCollegeControl _addCollegeControl;
         private AddProgramControl _addProgramControl;
+        private AddStudentControl _addStudentControl;
+
         private ViewCollegesControl _viewCollegesControl;
         private ViewProgramsControl _viewProgramsControl;
-        private DashboardView _dashboardView;
-        private StudentDataService _studentDataService;
-        private AddStudentControl _addStudentControl;
         private ViewStudentControl _viewStudentControl;
-     
+            
+        private DashboardView _dashboardView;
+        #endregion
 
+        #region Public Properties
+        public string CurrentUser { get; private set; }
+        #endregion
 
-        public string CurrentUser { get; set; } = "Admin";
-
+        #region Constructor
         public MainWindow(string username)
         {
-            InitializeComponent();
-
             try
             {
-                CurrentUser = username; // Set the current user from login
-
-                // Initialize all services first
-                _collegeDataService = new CollegeDataService("colleges.csv") { CurrentUser = CurrentUser };
-                _programDataService = new ProgramDataService("programs.csv") { CurrentUser = CurrentUser };
-                _studentDataService = new StudentDataService("students.csv") { CurrentUser = CurrentUser };
-
-                // Then initialize all controls
-                _dashboardView = new DashboardView();
-                _addCollegeControl = new AddCollegeControl(_collegeDataService);
-                _addProgramControl = new AddProgramControl(_programDataService, _collegeDataService);
-                _viewCollegesControl = new ViewCollegesControl(_collegeDataService);
-                _viewProgramsControl = new ViewProgramsControl(_programDataService, _studentDataService)
-                {
-                    CurrentUser = CurrentUser
-                };
-                _addStudentControl = new AddStudentControl(_studentDataService, _collegeDataService, _programDataService);
-                _viewStudentControl = new ViewStudentControl(_studentDataService, _programDataService, _collegeDataService);
-
-                // Set user information
-                LoginStatus.Text = CurrentUser;
-                ProfileName.Text = CurrentUser;
-
-                // Set initial content
-                MainContent.Content = _dashboardView;
+                InitializeComponent();
+                InitializeServices(username);
+                InitializeControls();
+                InitializeUserInterface();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error initializing application: {ex.Message}", "Error",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                HandleInitializationError(ex);
             }
         }
+        #endregion
 
+        #region Initialization Methods
+        private void InitializeServices(string username)
+        {
+            CurrentUser = username ?? DEFAULT_USER;
+
+            _collegeDataService = new CollegeDataService("colleges.csv") { CurrentUser = CurrentUser };
+            _programDataService = new ProgramDataService("programs.csv") { CurrentUser = CurrentUser };
+            _studentDataService = new StudentDataService("students.csv") { CurrentUser = CurrentUser };
+        }
+
+        private void InitializeControls()
+        {
+            _dashboardView = new DashboardView();
+
+            _addCollegeControl = new AddCollegeControl(_collegeDataService);
+            _addProgramControl = new AddProgramControl(_programDataService, _collegeDataService);
+            _addStudentControl = new AddStudentControl(_studentDataService, _collegeDataService, _programDataService);
+
+            _viewCollegesControl = new ViewCollegesControl(_collegeDataService);
+            _viewProgramsControl = new ViewProgramsControl(_programDataService, _studentDataService)
+            {
+                CurrentUser = CurrentUser
+            };
+            _viewStudentControl = new ViewStudentControl(_studentDataService, _programDataService, _collegeDataService);
+        }
+
+        private void InitializeUserInterface()
+        {
+            LoginStatus.Text = CurrentUser;
+            ProfileName.Text = CurrentUser;
+            MainContent.Content = _dashboardView;
+            UpdateDirectory("Home");
+        }
+
+        private void HandleInitializationError(Exception ex)
+        {
+            MessageBox.Show(
+                $"Error initializing application: {ex.Message}",
+                "Initialization Error",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error
+            );
+        }
+        #endregion
+
+        #region Navigation Methods
         private void UpdateDirectory(string page)
         {
             DirectoryText.Text = $" | /{page}";
         }
+
         private void NavigateHome_Click(object sender, RoutedEventArgs e)
         {
             MainContent.Content = _dashboardView;
@@ -84,7 +122,7 @@ namespace sis_app.Views
 
         private void NavigateAddOption2_Click(object sender, RoutedEventArgs e)
         {
-            _addProgramControl.LoadCollegeCodes(); // Refresh college codes in the dropdown
+            _addProgramControl.LoadCollegeCodes();
             MainContent.Content = _addProgramControl;
             UpdateDirectory("Add/Program");
         }
@@ -93,7 +131,7 @@ namespace sis_app.Views
         {
             _addStudentControl.LoadProgramCodes();
             MainContent.Content = _addStudentControl;
-            UpdateDirectory("Add/Student"); // Placeholder
+            UpdateDirectory("Add/Student");
         }
 
         private void NavigateViewOption1_Click(object sender, RoutedEventArgs e)
@@ -103,12 +141,11 @@ namespace sis_app.Views
             UpdateDirectory("View/Colleges");
         }
 
-
         private void NavigateViewOption2_Click(object sender, RoutedEventArgs e)
         {
-            _viewProgramsControl.LoadPrograms();  // Uncomment and implement when you create ViewProgramsControl
-            MainContent.Content = _viewProgramsControl; // Uncomment when you have ViewProgramsControl
-            UpdateDirectory("View/Programs"); // Placeholder for now
+            _viewProgramsControl.LoadPrograms();
+            MainContent.Content = _viewProgramsControl;
+            UpdateDirectory("View/Programs");
         }
 
         private void NavigateViewOption3_Click(object sender, RoutedEventArgs e)
@@ -129,49 +166,52 @@ namespace sis_app.Views
             MainContent.Content = new HistoryView();
             UpdateDirectory("History");
         }
+        #endregion
 
+        #region External Link Methods
         private void YouTube_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                Process.Start(new ProcessStartInfo("https://www.youtube.com/@keane6635")
-                { UseShellExecute = true });
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error opening YouTube: {ex.Message}", "Error");
-            }
+            OpenExternalLink("https://www.youtube.com/@keane6635");
         }
 
         private void GitHub_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                Process.Start(new ProcessStartInfo("https://github.com/keaneph")
-                { UseShellExecute = true });
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error opening GitHub: {ex.Message}", "Error");
-            }
+            OpenExternalLink("https://github.com/keaneph");
         }
 
         private void LinkedIn_Click(object sender, RoutedEventArgs e)
         {
+            OpenExternalLink("https://www.linkedin.com/in/keanepharelle/");
+        }
+
+        private void OpenExternalLink(string url)
+        {
             try
             {
-                Process.Start(new ProcessStartInfo("https://www.linkedin.com/in/keanepharelle/")
-                { UseShellExecute = true });
+                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error opening LinkedIn: {ex.Message}", "Error");
+                MessageBox.Show(
+                    $"Error opening link: {ex.Message}",
+                    "External Link Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
             }
         }
+        #endregion
 
+        #region Settings
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Settings functionality coming soon!", "Settings");
+            MessageBox.Show(
+                "Settings functionality coming soon!",
+                "Settings",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information
+            );
         }
+        #endregion
     }
 }

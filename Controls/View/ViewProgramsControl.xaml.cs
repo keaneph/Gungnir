@@ -14,26 +14,44 @@ using sis_app.Services;
 
 namespace sis_app.Controls.View
 {
+    /// <summary>
+    /// Control for viewing and managing program data in the Student Information System.
+    /// Handles CRUD operations and maintains relationships with colleges and students.
+    /// </summary>
     public partial class ViewProgramsControl : UserControl
     {
-        // character limits for program name and code
+        #region Constants
         private const int MAX_PROGRAM_NAME_LENGTH = 27;
         private const int MAX_PROGRAM_CODE_LENGTH = 7;
+        private const int MIN_CODE_LENGTH = 2;
+        private const string DELETED_MARKER = "DELETED";
+        #endregion
 
-        // services for handling data operations
+        #region Private Fields
         private readonly ProgramDataService _programDataService;
         private readonly StudentDataService _studentDataService;
         private readonly CollegeDataService _collegeDataService;
-        private ObservableCollection<Program> _programs;
-        private Dictionary<Program, Program> _originalProgramData;
+        private readonly ObservableCollection<Program> _programs;
+        private readonly Dictionary<Program, Program> _originalProgramData;
         private List<string> _availableCollegeCodes;
+        #endregion
+
+        #region Public Properties
         public string CurrentUser { get; set; }
 
+        public List<string> AvailableCollegeCodes
+        {
+            get { return _availableCollegeCodes; }
+            private set { _availableCollegeCodes = value; }
+        }
+        #endregion
+
+        #region Constructor and Initialization
         public ViewProgramsControl(ProgramDataService programDataService, StudentDataService studentDataService)
         {
             InitializeComponent();
 
-            // Initialize services
+            // Validate and initialize services
             _programDataService = programDataService ?? throw new ArgumentNullException(nameof(programDataService));
             _studentDataService = studentDataService ?? throw new ArgumentNullException(nameof(studentDataService));
             _collegeDataService = new CollegeDataService("colleges.csv");
@@ -43,29 +61,34 @@ namespace sis_app.Controls.View
             _originalProgramData = new Dictionary<Program, Program>();
             _availableCollegeCodes = new List<string>();
 
-            // Set ItemsSource
-            ProgramListView.ItemsSource = _programs;
+            InitializeUserInterface();
+        }
 
-            // Load initial data
+        private void InitializeUserInterface()
+        {
+            ProgramListView.ItemsSource = _programs;
             LoadPrograms();
             LoadAvailableCollegeCodes();
-
-            // Set default sort
-            if (SortComboBox != null)
-            {
-                SortComboBox.SelectedIndex = 0;
-            }
+            SortComboBox.SelectedIndex = 0;
         }
 
-        // loads available college codes for combobox
         private void LoadAvailableCollegeCodes()
         {
-            _availableCollegeCodes = _collegeDataService.GetAllColleges()
-                .Select(c => c.Code)
-                .OrderBy(code => code)
-                .ToList();
+            try
+            {
+                _availableCollegeCodes = _collegeDataService.GetAllColleges()
+                    .Select(c => c.Code)
+                    .OrderBy(code => code)
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                HandleLoadError("college codes", ex);
+            }
         }
+        #endregion
 
+        #region Data Loading Methods
         public void LoadPrograms()
         {
             try
@@ -76,44 +99,133 @@ namespace sis_app.Controls.View
                 {
                     _programs.Add(program);
                 }
-                ProgramListView.ItemsSource = _programs;
                 SortPrograms();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading programs: {ex.Message}", "Error",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                HandleLoadError("programs", ex);
             }
         }
 
-        // validates program name input to allow only letters
+        private void HandleLoadError(string dataType, Exception ex)
+        {
+            MessageBox.Show(
+                $"Error loading {dataType}: {ex.Message}",
+                "Load Error",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error
+            );
+        }
+        #endregion
+
+        #region Input Validation Methods
         private void ProgramNameTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            Regex regex = new Regex("[^a-zA-Z]+");
-            e.Handled = regex.IsMatch(e.Text);
+            e.Handled = !IsValidNameInput(e.Text);
         }
 
-        // validates program code input to allow only letters
         private void ProgramCodeTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            Regex regex = new Regex("[^a-zA-Z]+");
-            e.Handled = regex.IsMatch(e.Text);
+            e.Handled = !IsValidCodeInput(e.Text);
         }
 
-        // handles program name text changes
+        private static bool IsValidNameInput(string text)
+        {
+            return text.All(c => char.IsLetter(c));
+        }
+
+        private static bool IsValidCodeInput(string text)
+        {
+            return text.All(c => char.IsLetter(c));
+        }
+
+        private bool ValidateEditedData(Program program)
+        {
+            if (!ValidateProgramName(program.Name))
+                return false;
+
+            if (!ValidateProgramCode(program.Code))
+                return false;
+
+            if (!ValidateCollegeCode(program.CollegeCode))
+                return false;
+
+            return true;
+        }
+
+        private bool ValidateProgramName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                ShowValidationError("Program name cannot be empty.");
+                return false;
+            }
+
+            if (name.Length > MAX_PROGRAM_NAME_LENGTH)
+            {
+                ShowValidationError($"Program name cannot exceed {MAX_PROGRAM_NAME_LENGTH} characters.");
+                return false;
+            }
+
+            if (!name.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
+            {
+                ShowValidationError("Program name can only contain letters and spaces.");
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool ValidateProgramCode(string code)
+        {
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                ShowValidationError("Program code cannot be empty.");
+                return false;
+            }
+
+            if (code.Length < MIN_CODE_LENGTH)
+            {
+                ShowValidationError($"Program code must be at least {MIN_CODE_LENGTH} characters.");
+                return false;
+            }
+
+            if (code.Length > MAX_PROGRAM_CODE_LENGTH)
+            {
+                ShowValidationError($"Program code cannot exceed {MAX_PROGRAM_CODE_LENGTH} characters.");
+                return false;
+            }
+
+            if (!code.All(char.IsLetter))
+            {
+                ShowValidationError("Program code can only contain letters.");
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool ValidateCollegeCode(string collegeCode)
+        {
+            if (!_availableCollegeCodes.Contains(collegeCode, StringComparer.OrdinalIgnoreCase))
+            {
+                ShowValidationError($"College code '{collegeCode}' does not exist.");
+                return false;
+            }
+
+            return true;
+        }
+        #endregion
+
+        #region Text Change Handlers
         private void ProgramNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (sender is TextBox textBox)
             {
-                if (textBox.Text.Length > MAX_PROGRAM_NAME_LENGTH)
-                {
-                    textBox.Text = textBox.Text.Substring(0, MAX_PROGRAM_NAME_LENGTH);
-                    textBox.CaretIndex = MAX_PROGRAM_NAME_LENGTH;
-                }
+                EnforceLengthLimit(textBox, MAX_PROGRAM_NAME_LENGTH);
             }
         }
 
-        // handles program code text changes
         private void ProgramCodeTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (sender is TextBox textBox)
@@ -121,62 +233,53 @@ namespace sis_app.Controls.View
                 int caretIndex = textBox.CaretIndex;
                 string newText = textBox.Text.ToUpper();
 
-                // Remove any invalid characters
-                newText = new string(newText.Where(c => char.IsLetter(c)).ToArray());
-
-                if (newText.Length > MAX_PROGRAM_CODE_LENGTH)
-                {
-                    newText = newText.Substring(0, MAX_PROGRAM_CODE_LENGTH);
-                    caretIndex = MAX_PROGRAM_CODE_LENGTH;
-                }
+                newText = EnforceCodeRules(newText);
 
                 textBox.Text = newText;
                 textBox.CaretIndex = Math.Min(caretIndex, newText.Length);
             }
         }
 
-        private void ClearProgramsButton_Click(object sender, RoutedEventArgs e)
+        private static void EnforceLengthLimit(TextBox textBox, int maxLength)
         {
-            var students = _studentDataService.GetAllStudents();
-            var affectedStudents = students.Where(s => s.ProgramCode != "DELETED").ToList();
-
-            string message = "Are you sure you want to clear all program data?";
-            if (affectedStudents.Any())
+            if (textBox.Text.Length > maxLength)
             {
-                message += $"\nWarning: {affectedStudents.Count} students will be affected.";
-            }
-
-            MessageBoxResult result = MessageBox.Show(message, "Confirmation",
-                MessageBoxButton.YesNo, MessageBoxImage.Warning);
-
-            if (result == MessageBoxResult.Yes)
-            {
-                try
-                {
-                    // Update all affected students
-                    foreach (var student in affectedStudents)
-                    {
-                        student.ProgramCode = "DELETED";
-                        student.CollegeCode = "DELETED";
-                        _studentDataService.UpdateStudent(student, student);
-                    }
-
-                    File.WriteAllText("programs.csv", string.Empty);
-                    LoadPrograms();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error clearing program data: {ex.Message}", "Error");
-                }
+                textBox.Text = textBox.Text.Substring(0, maxLength);
+                textBox.CaretIndex = maxLength;
             }
         }
 
+        private static string EnforceCodeRules(string text)
+        {
+            return new string(text.Where(char.IsLetter).Take(MAX_PROGRAM_CODE_LENGTH).ToArray());
+        }
+
+        private static void ShowValidationError(string message)
+        {
+            MessageBox.Show(
+                message,
+                "Validation Error",
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning
+            );
+        }
+        #endregion
+
+        #region Edit Mode Handlers
         private void EditModeToggleButton_Checked(object sender, RoutedEventArgs e)
         {
-            // refresh available college codes
             LoadAvailableCollegeCodes();
+            StoreOriginalData();
+            UpdateComboBoxes();
+        }
 
-            // store original data
+        private void EditModeToggleButton_Unchecked(object sender, RoutedEventArgs e)
+        {
+            ProcessEditedData();
+        }
+
+        private void StoreOriginalData()
+        {
             _originalProgramData.Clear();
             foreach (var program in _programs)
             {
@@ -189,8 +292,10 @@ namespace sis_app.Controls.View
                     User = program.User
                 };
             }
+        }
 
-            // update comboboxes in listview
+        private void UpdateComboBoxes()
+        {
             if (ProgramListView.ItemContainerGenerator.Status == System.Windows.Controls.Primitives.GeneratorStatus.ContainersGenerated)
             {
                 foreach (var program in _programs)
@@ -209,7 +314,7 @@ namespace sis_app.Controls.View
             }
         }
 
-        private void EditModeToggleButton_Unchecked(object sender, RoutedEventArgs e)
+        private void ProcessEditedData()
         {
             try
             {
@@ -218,46 +323,14 @@ namespace sis_app.Controls.View
                     if (!_originalProgramData.TryGetValue(program, out Program originalProgram))
                         continue;
 
-                    bool isChanged = program.Name != originalProgram.Name ||
-                                   program.Code != originalProgram.Code ||
-                                   program.CollegeCode != originalProgram.CollegeCode;
-
-                    if (!isChanged)
+                    if (!HasChanges(program, originalProgram))
                         continue;
 
-                    // Validate the edited data
-                    if (!ValidateEditedData(program))
+                    if (!ValidateAndUpdateProgram(program, originalProgram))
                     {
                         RevertChanges(program, originalProgram);
-                        continue;
                     }
-
-                    // Check for duplicate code
-                    if (IsDuplicateProgramCode(program, originalProgram))
-                    {
-                        RevertChanges(program, originalProgram);
-                        continue;
-                    }
-
-                    // Update students if program code has changed
-                    if (!string.Equals(program.Code, originalProgram.Code, StringComparison.OrdinalIgnoreCase))
-                    {
-                        UpdateStudentsForProgramCodeChange(originalProgram.Code, program.Code, program.CollegeCode);
-                    }
-                    // Update students if only college code has changed
-                    else if (!string.Equals(program.CollegeCode, originalProgram.CollegeCode, StringComparison.OrdinalIgnoreCase))
-                    {
-                        UpdateStudentsForCollegeCodeChange(program.Code, program.CollegeCode);
-                    }
-
-                    // Update the program in the database
-                    _programDataService.UpdateProgram(originalProgram, program);
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error updating programs: {ex.Message}", "Error",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -265,146 +338,83 @@ namespace sis_app.Controls.View
             }
         }
 
-        private void RevertChanges(Program program, Program originalProgram)
+        private static bool HasChanges(Program current, Program original)
         {
-            program.Name = originalProgram.Name;
-            program.Code = originalProgram.Code;
-            program.CollegeCode = originalProgram.CollegeCode;
+            return current.Name != original.Name ||
+                   current.Code != original.Code ||
+                   current.CollegeCode != original.CollegeCode;
         }
 
-        private bool IsDuplicateProgramCode(Program program, Program originalProgram)
+        private void RevertChanges(Program current, Program original)
         {
-            var existingProgram = _programs.FirstOrDefault(p =>
+            current.Name = original.Name;
+            current.Code = original.Code;
+            current.CollegeCode = original.CollegeCode;
+        }
+        #endregion
+
+        #region Data Management Methods
+        private bool ValidateAndUpdateProgram(Program program, Program originalProgram)
+        {
+            if (!ValidateEditedData(program))
+                return false;
+
+            if (IsDuplicateCode(program))
+            {
+                ShowDuplicateCodeError(program.Code);
+                return false;
+            }
+
+            UpdateRelatedStudents(originalProgram.Code, program.Code, program.CollegeCode);
+            _programDataService.UpdateProgram(originalProgram, program);
+            return true;
+        }
+
+        private bool IsDuplicateCode(Program program)
+        {
+            return _programs.Any(p =>
                 p != program &&
                 p.Code.Equals(program.Code, StringComparison.OrdinalIgnoreCase));
-
-            if (existingProgram != null)
-            {
-                MessageBox.Show($"A program with code '{program.Code}' already exists.", "Error",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-                return true;
-            }
-            return false;
         }
 
-        private void UpdateStudentsForProgramCodeChange(string oldCode, string newCode, string newCollegeCode)
+        private void UpdateRelatedStudents(string oldCode, string newCode, string newCollegeCode)
         {
-            var students = _studentDataService.GetAllStudents()
+            var affectedStudents = _studentDataService.GetAllStudents()
                 .Where(s => s.ProgramCode.Equals(oldCode, StringComparison.OrdinalIgnoreCase))
                 .ToList();
 
-            if (students.Any())
+            if (!affectedStudents.Any()) return;
+
+            ShowStudentsUpdatedMessage(oldCode, newCode, affectedStudents.Count);
+
+            foreach (var student in affectedStudents)
             {
-                MessageBox.Show(
-                    $"Program code changed from '{oldCode}' to '{newCode}'. " +
-                    $"{students.Count} students will be updated.",
-                    "Students Affected",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Information);
-
-                foreach (var student in students)
-                {
-                    student.ProgramCode = newCode;
-                    student.CollegeCode = newCollegeCode;
-                    _studentDataService.UpdateStudent(student, student);
-                }
-            }
-        }
-
-        private void UpdateStudentsForCollegeCodeChange(string programCode, string newCollegeCode)
-        {
-            var students = _studentDataService.GetAllStudents()
-                .Where(s => s.ProgramCode.Equals(programCode, StringComparison.OrdinalIgnoreCase))
-                .ToList();
-
-            foreach (var student in students)
-            {
+                student.ProgramCode = newCode;
                 student.CollegeCode = newCollegeCode;
                 _studentDataService.UpdateStudent(student, student);
             }
         }
 
-        private bool ValidateProgramCode(string programCode)
+        private static void ShowDuplicateCodeError(string code)
         {
-            if (string.IsNullOrWhiteSpace(programCode))
-                return false;
-
-            if (programCode.Length < 2 || programCode.Length > MAX_PROGRAM_CODE_LENGTH)
-                return false;
-
-            return programCode.All(char.IsLetter);
+            MessageBox.Show(
+                $"A program with code '{code}' already exists.",
+                "Duplicate Code Error",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error
+            );
         }
 
-        // validates the edited data
-        private bool ValidateEditedData(Program program)
+        private static void ShowStudentsUpdatedMessage(string oldCode, string newCode, int count)
         {
-            // check if program name is empty
-            if (string.IsNullOrWhiteSpace(program.Name))
-            {
-                MessageBox.Show("Program name cannot be empty.", "Validation Error",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                return false;
-            }
-
-            // check program name length
-            if (program.Name.Length > MAX_PROGRAM_NAME_LENGTH)
-            {
-                MessageBox.Show($"Program name cannot exceed {MAX_PROGRAM_NAME_LENGTH} characters.", "Validation Error",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                return false;
-            }
-
-            // check if program code is empty
-            if (string.IsNullOrWhiteSpace(program.Code))
-            {
-                MessageBox.Show("Program code cannot be empty.", "Validation Error",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                return false;
-            }
-
-            // check minimum length for program code
-            if (program.Code.Length < 2)
-            {
-                MessageBox.Show("Program code must be at least 2 characters.", "Validation Error",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                return false;
-            }
-
-            // check maximum length for program code
-            if (program.Code.Length > MAX_PROGRAM_CODE_LENGTH)
-            {
-                MessageBox.Show($"Program code cannot exceed {MAX_PROGRAM_CODE_LENGTH} characters.", "Validation Error",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                return false;
-            }
-
-            // validate only letters (and spaces for name)
-            if (!program.Name.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
-            {
-                MessageBox.Show("Program name can only contain letters and spaces.", "Validation Error",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                return false;
-            }
-
-            if (!program.Code.All(char.IsLetter))
-            {
-                MessageBox.Show("Program code can only contain letters.", "Validation Error",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                return false;
-            }
-
-            // validate college code exists
-            if (!_availableCollegeCodes.Contains(program.CollegeCode, StringComparer.OrdinalIgnoreCase))
-            {
-                MessageBox.Show($"College code '{program.CollegeCode}' does not exist.", "Validation Error",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                return false;
-            }
-
-            return true;
+            MessageBox.Show(
+                $"Program code changed from '{oldCode}' to '{newCode}'. {count} students will be updated.",
+                "Students Affected",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information
+            );
         }
 
-        // helper method to find visual child
         private T FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
         {
             for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
@@ -418,54 +428,142 @@ namespace sis_app.Controls.View
             }
             return null;
         }
+        #endregion
 
-        // rest of your existing methods remain the same
+        #region Delete Operations
         private void DeleteSelectedButton_Click(object sender, RoutedEventArgs e)
         {
             var selectedItems = ProgramListView.SelectedItems.OfType<Program>().ToList();
-            if (selectedItems.Any())
+            if (!selectedItems.Any())
             {
-                // Check for affected students
-                var students = _studentDataService.GetAllStudents();
-                var affectedStudents = students.Where(s =>
-                    selectedItems.Any(p => p.Code.Equals(s.ProgramCode, StringComparison.OrdinalIgnoreCase))).ToList();
-
-                string message = $"Are you sure you want to delete the selected {selectedItems.Count} programs?";
-                if (affectedStudents.Any())
-                {
-                    message += $"\nWarning: {affectedStudents.Count} students are enrolled in these programs and will be affected.";
-                }
-
-                MessageBoxResult result = MessageBox.Show(message, "Confirmation",
-                    MessageBoxButton.YesNo, MessageBoxImage.Warning);
-
-                if (result == MessageBoxResult.Yes)
-                {
-                    foreach (var program in selectedItems)
-                    {
-                        // Update affected students
-                        foreach (var student in affectedStudents.Where(s =>
-                            s.ProgramCode.Equals(program.Code, StringComparison.OrdinalIgnoreCase)))
-                        {
-                            student.ProgramCode = "DELETED";
-                            student.CollegeCode = "DELETED";
-                            _studentDataService.UpdateStudent(student, student);
-                        }
-
-                        _programDataService.DeleteProgram(program);
-                        _programs.Remove(program);
-                    }
-                    LoadPrograms();
-                }
+                ShowNoSelectionMessage();
+                return;
             }
-            else
+
+            if (ConfirmDeletion(selectedItems))
             {
-                MessageBox.Show("Please select programs to delete.", "Information",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
+                DeletePrograms(selectedItems);
+                LoadPrograms();
             }
         }
 
-        // your existing sort methods remain the same
+        private void ClearProgramsButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (ConfirmClearAll())
+            {
+                ClearAllData();
+            }
+        }
+
+        private static void ShowNoSelectionMessage()
+        {
+            MessageBox.Show(
+                "Please select programs to delete.",
+                "Information",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information
+            );
+        }
+
+        private bool ConfirmDeletion(List<Program> selectedItems)
+        {
+            var affectedStudents = GetAffectedStudents(selectedItems);
+            string message = BuildDeleteConfirmationMessage(selectedItems.Count, affectedStudents.Count);
+
+            return MessageBox.Show(
+                message,
+                "Confirmation",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning
+            ) == MessageBoxResult.Yes;
+        }
+
+        private void DeletePrograms(List<Program> programs)
+        {
+            foreach (var program in programs)
+            {
+                DeleteProgramAndUpdateStudents(program);
+            }
+        }
+
+        private void DeleteProgramAndUpdateStudents(Program program)
+        {
+            _programDataService.DeleteProgram(program);
+            _programs.Remove(program);
+
+            var affectedStudents = _studentDataService.GetAllStudents()
+                .Where(s => s.ProgramCode.Equals(program.Code, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            foreach (var student in affectedStudents)
+            {
+                student.ProgramCode = DELETED_MARKER;
+                student.CollegeCode = DELETED_MARKER;
+                _studentDataService.UpdateStudent(student, student);
+            }
+        }
+
+        private List<Student> GetAffectedStudents(List<Program> programs)
+        {
+            return _studentDataService.GetAllStudents()
+                .Where(s => programs.Any(p =>
+                    p.Code.Equals(s.ProgramCode, StringComparison.OrdinalIgnoreCase)))
+                .ToList();
+        }
+
+        private static string BuildDeleteConfirmationMessage(int programCount, int studentCount)
+        {
+            string message = $"Are you sure you want to delete the selected {programCount} programs?";
+            if (studentCount > 0)
+            {
+                message += $"\nWarning: {studentCount} students are enrolled in these programs and will be affected.";
+            }
+            return message;
+        }
+
+        private static bool ConfirmClearAll()
+        {
+            return MessageBox.Show(
+                "Warning: Clearing programs will affect all students enrolled in these programs. Continue?",
+                "Confirmation",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning
+            ) == MessageBoxResult.Yes;
+        }
+
+        private void ClearAllData()
+        {
+            try
+            {
+                var students = _studentDataService.GetAllStudents();
+                var affectedStudents = students.Where(s => s.ProgramCode != DELETED_MARKER).ToList();
+
+                if (affectedStudents.Any())
+                {
+                    foreach (var student in affectedStudents)
+                    {
+                        student.ProgramCode = DELETED_MARKER;
+                        student.CollegeCode = DELETED_MARKER;
+                        _studentDataService.UpdateStudent(student, student);
+                    }
+                }
+
+                File.WriteAllText("programs.csv", string.Empty);
+                LoadPrograms();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error clearing program data: {ex.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
+            }
+        }
+        #endregion
+
+        #region Sorting Methods
         private void SortComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             SortPrograms();
@@ -475,43 +573,40 @@ namespace sis_app.Controls.View
         {
             if (SortComboBox.SelectedItem is ComboBoxItem selectedItem)
             {
-                string sortOption = selectedItem.Content.ToString();
+                ApplySorting(selectedItem.Content.ToString());
+            }
+        }
 
-                switch (sortOption)
-                {
-                    case "Date and Time Modified (Oldest First)":
-                        SortList(c => c.DateTime, ListSortDirection.Ascending);
-                        break;
-                    case "Date and Time Modified (Newest First)":
-                        SortList(p => p.DateTime, ListSortDirection.Descending);
-                        break;
-                    case "Alphabetical Program Name":
-                        SortList(p => p.Name, ListSortDirection.Ascending);
-                        break;
-                    case "Alphabetical Program Code":
-                        SortList(p => p.Code, ListSortDirection.Ascending);
-                        break;
-                    case "Alphabetical College Code":
-                        SortList(p => p.CollegeCode, ListSortDirection.Ascending);
-                        break;
-                    case "Alphabetical User":
-                        SortList(p => p.User, ListSortDirection.Ascending);
-                        break;
-                }
+        private void ApplySorting(string sortOption)
+        {
+            switch (sortOption)
+            {
+                case "Date and Time Modified (Oldest First)":
+                    SortList(p => p.DateTime, ListSortDirection.Ascending);
+                    break;
+                case "Date and Time Modified (Newest First)":
+                    SortList(p => p.DateTime, ListSortDirection.Descending);
+                    break;
+                case "Alphabetical Program Name":
+                    SortList(p => p.Name, ListSortDirection.Ascending);
+                    break;
+                case "Alphabetical Program Code":
+                    SortList(p => p.Code, ListSortDirection.Ascending);
+                    break;
+                case "Alphabetical College Code":
+                    SortList(p => p.CollegeCode, ListSortDirection.Ascending);
+                    break;
+                case "Alphabetical User":
+                    SortList(p => p.User, ListSortDirection.Ascending);
+                    break;
             }
         }
 
         private void SortList<TKey>(Func<Program, TKey> keySelector, ListSortDirection direction)
         {
-            List<Program> sortedList;
-            if (direction == ListSortDirection.Ascending)
-            {
-                sortedList = _programs.OrderBy(keySelector).ToList();
-            }
-            else
-            {
-                sortedList = _programs.OrderByDescending(keySelector).ToList();
-            }
+            var sortedList = direction == ListSortDirection.Ascending
+                ? _programs.OrderBy(keySelector).ToList()
+                : _programs.OrderByDescending(keySelector).ToList();
 
             _programs.Clear();
             foreach (var item in sortedList)
@@ -520,5 +615,6 @@ namespace sis_app.Controls.View
             }
             ProgramListView.Items.Refresh();
         }
+        #endregion
     }
 }
