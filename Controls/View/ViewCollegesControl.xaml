@@ -12,28 +12,42 @@
                 Width="600" 
                 CornerRadius="15" 
                 Padding="0,10,0,15">
-            
+
             <Grid Margin="20">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                
+
                 <!-- top panel -->
-                <StackPanel Orientation="Horizontal" Grid.Row="0">
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Search Box -->
+                    <TextBox x:Name="SearchBox" 
+                     Grid.Column="0"
+                     Margin="-90,0,0,0"
+                     Style="{StaticResource SearchBoxStyle}"
+                     TextChanged="SearchBox_TextChanged"/>  
+
+                    <!-- Sort ComboBox -->
                     <ComboBox x:Name="SortComboBox" 
-                          Width="235" 
-                          Margin="0,10" 
-                          Style="{StaticResource SortComboBoxStyle}"
-                          SelectionChanged="SortComboBox_SelectionChanged">
+                              Grid.Column="1"
+                              Width="235" 
+                              Margin="0,10" 
+                              Style="{StaticResource SortComboBoxStyle}"
+                              SelectionChanged="SortComboBox_SelectionChanged">
                         <ComboBoxItem Content="Date and Time Modified (Oldest First)"/>
                         <ComboBoxItem Content="Date and Time Modified (Newest First)"/>
                         <ComboBoxItem Content="Alphabetical College Name"/>
                         <ComboBoxItem Content="Alphabetical College Code"/>
                         <ComboBoxItem Content="Alphabetical User"/>
                     </ComboBox>
-                </StackPanel>
+                </Grid>
 
                 <!-- listview (or da table) -->
                 <ListView x:Name="CollegeListView" 
@@ -81,7 +95,7 @@
                                     <DataTemplate>
                                         <TextBlock Text="{Binding DateTime}" 
                                                    Style="{StaticResource TableCellStyle}"
-                                                   Width="{Binding Width, RelativeSource={RelativeSource AncestorType=GridViewColumn}}"/>        
+                                                   Width="{Binding Width, RelativeSource={RelativeSource AncestorType=GridViewColumn}}"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
@@ -100,9 +114,9 @@
                             </GridViewColumn>
                         </GridView>
                     </ListView.View>
-                    </ListView>
+                </ListView>
 
-                    <!-- bottom Panel -->
+                <!-- bottom Panel -->
                 <Grid Grid.Row="2" Margin="0,10" >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -120,8 +134,8 @@
                                 Click="DeleteSelectedButton_Click"
                                 Margin="10,0,0,0"
                                 Style="{StaticResource DeleteSelectedStyle}"/>
-
                     </StackPanel>
+
                     <!-- right-aligned button -->
                     <ToggleButton Grid.Column="1"
                                   x:Name="EditModeToggleButton" 

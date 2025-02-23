@@ -31,6 +31,9 @@ namespace sis_app.Controls.View
         private readonly ProgramDataService _programDataService;
         private readonly ObservableCollection<College> _colleges;
         private readonly Dictionary<College, College> _originalCollegeData;
+        // New fields for search functionality
+        private ObservableCollection<College> _allColleges;
+        private string _currentSearchText = string.Empty;
         #endregion
 
         #region Constructor
@@ -41,6 +44,7 @@ namespace sis_app.Controls.View
             _collegeDataService = collegeDataService ?? throw new ArgumentNullException(nameof(collegeDataService));
             _programDataService = new ProgramDataService("programs.csv");
             _colleges = new ObservableCollection<College>();
+            _allColleges = new ObservableCollection<College>(); // Add this line
             _originalCollegeData = new Dictionary<College, College>();
 
             InitializeUserInterface();
@@ -62,18 +66,68 @@ namespace sis_app.Controls.View
             try
             {
                 var colleges = _collegeDataService.GetAllColleges();
+                _allColleges = new ObservableCollection<College>(colleges);
+
                 _colleges.Clear();
                 foreach (var college in colleges)
                 {
                     _colleges.Add(college);
                 }
-                SortColleges();
+
+                // Apply any existing search filter
+                if (!string.IsNullOrWhiteSpace(_currentSearchText))
+                {
+                    ApplySearch();
+                }
+                else
+                {
+                    SortColleges();
+                }
             }
             catch (Exception ex)
             {
                 HandleLoadError(ex);
             }
         }
+        #endregion
+
+        #region Search Functionality
+        public void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            _currentSearchText = SearchBox.Text.Trim().ToLower();
+            ApplySearch();
+        }
+
+        private void ApplySearch()
+        {
+            if (string.IsNullOrWhiteSpace(_currentSearchText))
+            {
+                // If search is empty, restore all colleges
+                _colleges.Clear();
+                foreach (var college in _allColleges)
+                {
+                    _colleges.Add(college);
+                }
+            }
+            else
+            {
+                // Filter colleges based on search text
+                var filteredColleges = _allColleges.Where(college =>
+                    college.Name.ToLower().Contains(_currentSearchText) ||
+                    college.Code.ToLower().Contains(_currentSearchText)
+                ).ToList();
+
+                _colleges.Clear();
+                foreach (var college in filteredColleges)
+                {
+                    _colleges.Add(college);
+                }
+            }
+
+            // Maintain current sort after search
+            SortColleges();
+        }
+        #endregion
 
         private void HandleLoadError(Exception ex)
         {
@@ -84,7 +138,6 @@ namespace sis_app.Controls.View
                 MessageBoxImage.Error
             );
         }
-        #endregion
 
         #region Input Validation Methods
         private void CollegeNameTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
