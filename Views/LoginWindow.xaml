@@ -35,7 +35,7 @@
         <Style TargetType="TextBox" BasedOn="{StaticResource BaseInputStyle}"/>
         <Style TargetType="PasswordBox" BasedOn="{StaticResource BaseInputStyle}"/>
 
-        <!-- Login Button Style -->
+        <!-- login Button Style -->
         <Style x:Key="LoginButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="{StaticResource PrimaryColor}"/>
             <Setter Property="Foreground" Value="{StaticResource White}"/>
