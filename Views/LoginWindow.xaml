@@ -31,7 +31,7 @@
             <Setter Property="Padding" Value="10,5"/>
         </Style>
 
-        <!-- Apply BaseInputStyle to TextBox and PasswordBox -->
+        <!-- apply BaseInputStyle to TextBox and PasswordBox -->
         <Style TargetType="TextBox" BasedOn="{StaticResource BaseInputStyle}"/>
         <Style TargetType="PasswordBox" BasedOn="{StaticResource BaseInputStyle}"/>
 
