@@ -5,9 +5,7 @@ efficiently manage college records, program information, and student data.
 
 
 ## Dashboard Demo
-
-![image](https://github.com/user-attachments/assets/136fb263-1e1a-4737-922c-5fbb10c54b23)
-
+![dashboard_demo](https://github.com/user-attachments/assets/03a04c21-567f-4d6a-8ef2-db4922a2edc0)
 
 ## Features
 
