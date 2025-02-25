@@ -20,6 +20,7 @@ namespace sis_app.Controls.View
     /// </summary>
     public partial class ViewProgramsControl : UserControl
     {
+        // constants for validation and data management
         #region Constants
         private const int MAX_PROGRAM_NAME_LENGTH = 27;
         private const int MAX_PROGRAM_CODE_LENGTH = 7;
@@ -27,6 +28,7 @@ namespace sis_app.Controls.View
         private const string DELETED_MARKER = "DELETED";
         #endregion
 
+        // private fields for data services and collections
         #region Private Fields
         private readonly ProgramDataService _programDataService;
         private readonly StudentDataService _studentDataService;
@@ -38,6 +40,7 @@ namespace sis_app.Controls.View
         private string _currentSearchText = string.Empty;
         #endregion
 
+        // public properties
         #region Public Properties
         public string CurrentUser { get; set; }
 
@@ -48,17 +51,18 @@ namespace sis_app.Controls.View
         }
         #endregion
 
+        // constructor and initialization methods
         #region Constructor and Initialization
         public ViewProgramsControl(ProgramDataService programDataService, StudentDataService studentDataService)
         {
             InitializeComponent();
 
-            // Validate and initialize services
+            // validate and initialize services
             _programDataService = programDataService ?? throw new ArgumentNullException(nameof(programDataService));
             _studentDataService = studentDataService ?? throw new ArgumentNullException(nameof(studentDataService));
             _collegeDataService = new CollegeDataService("colleges.csv");
 
-            // Initialize collections
+            // initialize collections
             _programs = new ObservableCollection<Program>();
             _allPrograms = new ObservableCollection<Program>();
             _originalProgramData = new Dictionary<Program, Program>();
@@ -75,6 +79,7 @@ namespace sis_app.Controls.View
             SortComboBox.SelectedIndex = 0;
         }
 
+        // loads available college codes from service
         private void LoadAvailableCollegeCodes()
         {
             try
@@ -91,6 +96,7 @@ namespace sis_app.Controls.View
         }
         #endregion
 
+        // methods for loading program data
         #region Data Loading Methods
         public void LoadPrograms()
         {
@@ -105,7 +111,6 @@ namespace sis_app.Controls.View
                     _programs.Add(program);
                 }
 
-                // Apply any existing search filter
                 if (!string.IsNullOrWhiteSpace(_currentSearchText))
                 {
                     ApplySearch();
@@ -132,6 +137,7 @@ namespace sis_app.Controls.View
         }
         #endregion
 
+        // input validation methods
         #region Input Validation Methods
         private void ProgramNameTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
@@ -167,6 +173,7 @@ namespace sis_app.Controls.View
             return true;
         }
 
+        // validates program name according to rules
         private bool ValidateProgramName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -190,6 +197,7 @@ namespace sis_app.Controls.View
             return true;
         }
 
+        // validates program code according to rules
         private bool ValidateProgramCode(string code)
         {
             if (string.IsNullOrWhiteSpace(code))
@@ -219,6 +227,7 @@ namespace sis_app.Controls.View
             return true;
         }
 
+        // validates college code exists
         private bool ValidateCollegeCode(string collegeCode)
         {
             if (!_availableCollegeCodes.Contains(collegeCode, StringComparer.OrdinalIgnoreCase))
@@ -231,6 +240,7 @@ namespace sis_app.Controls.View
         }
         #endregion
 
+        // handlers for text changes
         #region Text Change Handlers
         private void ProgramNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -279,6 +289,7 @@ namespace sis_app.Controls.View
         }
         #endregion
 
+        // handlers for edit mode
         #region Edit Mode Handlers
         private void EditModeToggleButton_Checked(object sender, RoutedEventArgs e)
         {
@@ -290,7 +301,6 @@ namespace sis_app.Controls.View
         private void EditModeToggleButton_Unchecked(object sender, RoutedEventArgs e)
         {
             ProcessEditedData();
-            // Reapply search after edit mode
             if (!string.IsNullOrWhiteSpace(_currentSearchText))
             {
                 ApplySearch();
@@ -372,6 +382,7 @@ namespace sis_app.Controls.View
         }
         #endregion
 
+        // search functionality
         #region Search Functionality
         public void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -418,8 +429,9 @@ namespace sis_app.Controls.View
                 );
             }
         }
+        #endregion
 
-
+        // data management methods
         #region Data Management Methods
         private bool ValidateAndUpdateProgram(Program program, Program originalProgram)
         {
@@ -497,6 +509,7 @@ namespace sis_app.Controls.View
         }
         #endregion
 
+        // delete operations
         #region Delete Operations
         private void DeleteSelectedButton_Click(object sender, RoutedEventArgs e)
         {
@@ -513,8 +526,6 @@ namespace sis_app.Controls.View
                 LoadPrograms();
             }
         }
-
-        #endregion
 
         private void ClearProgramsButton_Click(object sender, RoutedEventArgs e)
         {
@@ -559,7 +570,7 @@ namespace sis_app.Controls.View
         {
             _programDataService.DeleteProgram(program);
             _programs.Remove(program);
-            _allPrograms.Remove(program);  // Add this line
+            _allPrograms.Remove(program);
 
             var affectedStudents = _studentDataService.GetAllStudents()
                 .Where(s => s.ProgramCode.Equals(program.Code, StringComparison.OrdinalIgnoreCase))
@@ -633,6 +644,7 @@ namespace sis_app.Controls.View
         }
         #endregion
 
+        // sorting methods
         #region Sorting Methods
         private void SortComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

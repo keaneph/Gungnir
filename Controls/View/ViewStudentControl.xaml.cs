@@ -14,13 +14,10 @@ using sis_app.Services;
 
 namespace sis_app.Controls.View
 {
-    /// <summary>
-    /// Control for viewing and managing student data in the Student Information System.
-    /// Handles CRUD operations and maintains relationships with programs and colleges.
-    /// </summary>
+    // main control for student information management
     public partial class ViewStudentControl : UserControl
     {
-        #region Constants
+        // validation limits for student data
         private const int MAX_FIRSTNAME_LENGTH = 26;
         private const int MAX_LASTNAME_LENGTH = 14;
         private const int MIN_NAME_LENGTH = 2;
@@ -30,12 +27,13 @@ namespace sis_app.Controls.View
         private const int MAX_YEAR = 2025;
         private const int MIN_NUMBER = 1;
         private const int MAX_NUMBER = 9999;
-        #endregion
-
-        #region Private Fields
+    
+        // services for data operations
         private readonly StudentDataService _studentDataService;
         private readonly ProgramDataService _programDataService;
         private readonly CollegeDataService _collegeDataService;
+
+        // collections for data management
         private readonly ObservableCollection<Student> _students;
         private readonly Dictionary<Student, Student> _originalStudentData;
         private readonly List<string> _availableProgramCodes;
@@ -43,34 +41,29 @@ namespace sis_app.Controls.View
         private readonly List<string> _genders;
         private ObservableCollection<Student> _allStudents;
         private string _currentSearchText = string.Empty;
-        #endregion
+       
 
-        #region Public Properties
+        // exposed collections for binding
         public ObservableCollection<Student> Students => _students;
-
         public List<string> AvailableProgramCodes => _availableProgramCodes;
-
         public List<int> YearLevels => _yearLevels;
-
         public List<string> Genders => _genders;
-        #endregion
-
-        #region Constructor and Initialization
+       
         public ViewStudentControl(
-    StudentDataService studentDataService,
-    ProgramDataService programDataService,
-    CollegeDataService collegeDataService)
+            StudentDataService studentDataService,
+            ProgramDataService programDataService,
+            CollegeDataService collegeDataService)
         {
             InitializeComponent();
 
-            // Validate and initialize services
+            // validate and initialize required services
             _studentDataService = studentDataService ?? throw new ArgumentNullException(nameof(studentDataService));
             _programDataService = programDataService ?? throw new ArgumentNullException(nameof(programDataService));
             _collegeDataService = collegeDataService ?? throw new ArgumentNullException(nameof(collegeDataService));
 
-            // Initialize collections
+            // initialize data collections
             _students = new ObservableCollection<Student>();
-            _allStudents = new ObservableCollection<Student>();  // Add this line
+            _allStudents = new ObservableCollection<Student>();
             _originalStudentData = new Dictionary<Student, Student>();
             _availableProgramCodes = new List<string>();
             _yearLevels = new List<int> { 1, 2, 3, 4 };
@@ -79,6 +72,7 @@ namespace sis_app.Controls.View
             InitializeUserInterface();
         }
 
+        // setup initial UI state
         private void InitializeUserInterface()
         {
             this.DataContext = this;
@@ -88,6 +82,7 @@ namespace sis_app.Controls.View
             SortComboBox.SelectedIndex = 0;
         }
 
+        // load available program codes
         private void LoadProgramCodes()
         {
             try
@@ -105,9 +100,10 @@ namespace sis_app.Controls.View
                 HandleLoadError("program codes", ex);
             }
         }
-        #endregion
+        
 
-        #region Data Loading Methods
+       
+        // load all student data and update relationships
         public void LoadStudents()
         {
             try
@@ -125,7 +121,7 @@ namespace sis_app.Controls.View
                     _students.Add(student);
                 }
 
-                // Apply any existing search filter
+                // maintain search filter if active
                 if (!string.IsNullOrWhiteSpace(_currentSearchText))
                 {
                     ApplySearch();
@@ -141,6 +137,7 @@ namespace sis_app.Controls.View
             }
         }
 
+        // update program and college relationships for student
         private void UpdateStudentProgramRelationship(Student student, Dictionary<string, Program> programs)
         {
             if (programs.TryGetValue(student.ProgramCode, out var program))
@@ -155,6 +152,7 @@ namespace sis_app.Controls.View
             }
         }
 
+        // display error message for load failures
         private void HandleLoadError(string dataType, Exception ex)
         {
             MessageBox.Show(
@@ -164,34 +162,40 @@ namespace sis_app.Controls.View
                 MessageBoxImage.Error
             );
         }
-        #endregion
+        
 
-        #region Input Validation Methods
+       
+        // validate id number input
         private void IDNumberTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             e.Handled = !IsValidIDNumberInput(e.Text);
         }
 
+        // validate first name input
         private void FirstNameTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             e.Handled = !IsValidNameInput(e.Text);
         }
 
+        // validate last name input
         private void LastNameTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             e.Handled = !IsValidNameInput(e.Text);
         }
 
+        // check if input contains only digits and hyphens
         private static bool IsValidIDNumberInput(string text)
         {
             return text.All(c => char.IsDigit(c) || c == '-');
         }
 
+        // check if input contains only letters
         private static bool IsValidNameInput(string text)
         {
             return text.All(char.IsLetter);
         }
 
+        // comprehensive validation of student data
         private bool ValidateEditedData(Student student)
         {
             if (!ValidateIDNumber(student.IDNumber))
@@ -209,6 +213,7 @@ namespace sis_app.Controls.View
             return true;
         }
 
+        // validate id number format and range
         private bool ValidateIDNumber(string idNumber)
         {
             if (string.IsNullOrWhiteSpace(idNumber))
@@ -235,6 +240,7 @@ namespace sis_app.Controls.View
             return true;
         }
 
+        // validate first name requirements
         private bool ValidateFirstName(string firstName)
         {
             if (string.IsNullOrWhiteSpace(firstName))
@@ -264,6 +270,7 @@ namespace sis_app.Controls.View
             return true;
         }
 
+        // validate last name requirements
         private bool ValidateLastName(string lastName)
         {
             if (string.IsNullOrWhiteSpace(lastName))
@@ -293,6 +300,7 @@ namespace sis_app.Controls.View
             return true;
         }
 
+        // validate program code exists and has valid college
         private bool ValidateProgramCode(string programCode)
         {
             if (programCode != DELETED_MARKER)
@@ -319,6 +327,7 @@ namespace sis_app.Controls.View
             return true;
         }
 
+        // display validation error messages
         private static void ShowValidationError(string message)
         {
             MessageBox.Show(
@@ -328,15 +337,16 @@ namespace sis_app.Controls.View
                 MessageBoxImage.Warning
             );
         }
-        #endregion
 
-        #region Search Functionality
+        
+        // handle search box text changes
         public void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             _currentSearchText = SearchBox.Text.Trim().ToLower();
             ApplySearch();
         }
 
+        // filter students based on search criteria
         private void ApplySearch()
         {
             try
@@ -381,7 +391,8 @@ namespace sis_app.Controls.View
             }
         }
 
-        #region Text Change Handlers
+        
+        // handle id number text changes and formatting
         private void IDNumberTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (sender is TextBox textBox)
@@ -390,6 +401,7 @@ namespace sis_app.Controls.View
             }
         }
 
+        // handle first name text changes
         private void FirstNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (sender is TextBox textBox)
@@ -398,6 +410,7 @@ namespace sis_app.Controls.View
             }
         }
 
+        // handle last name text changes
         private void LastNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (sender is TextBox textBox)
@@ -406,6 +419,7 @@ namespace sis_app.Controls.View
             }
         }
 
+        // format id number with proper structure
         private static void FormatIDNumber(TextBox textBox)
         {
             string text = textBox.Text;
@@ -430,6 +444,7 @@ namespace sis_app.Controls.View
             }
         }
 
+        // enforce maximum length for text input
         private static void EnforceLengthLimit(TextBox textBox, int maxLength)
         {
             if (textBox.Text.Length > maxLength)
@@ -438,9 +453,8 @@ namespace sis_app.Controls.View
                 textBox.CaretIndex = maxLength;
             }
         }
-        #endregion
-
-        #region Edit Mode Handlers
+        
+        // handle entering edit mode
         private void EditModeToggleButton_Checked(object sender, RoutedEventArgs e)
         {
             LoadProgramCodes();
@@ -448,16 +462,18 @@ namespace sis_app.Controls.View
             UpdateComboBoxes();
         }
 
+        // handle exiting edit mode
         private void EditModeToggleButton_Unchecked(object sender, RoutedEventArgs e)
         {
             ProcessEditedData();
-            // Reapply search after edit mode
+            // reapply search after edit mode
             if (!string.IsNullOrWhiteSpace(_currentSearchText))
             {
                 ApplySearch();
             }
         }
 
+        // store original data before editing
         private void StoreOriginalData()
         {
             _originalStudentData.Clear();
@@ -478,6 +494,7 @@ namespace sis_app.Controls.View
             }
         }
 
+        // update comboboxes for all students
         private void UpdateComboBoxes()
         {
             if (StudentListView.ItemContainerGenerator.Status == System.Windows.Controls.Primitives.GeneratorStatus.ContainersGenerated)
@@ -489,6 +506,7 @@ namespace sis_app.Controls.View
             }
         }
 
+        // update comboboxes for individual student
         private void UpdateComboBoxesForStudent(Student student)
         {
             var container = StudentListView.ItemContainerGenerator.ContainerFromItem(student) as ListViewItem;
@@ -506,7 +524,7 @@ namespace sis_app.Controls.View
                 UpdateComboBoxBasedOnPath(comboBox, bindingPath, student);
             }
         }
-
+        // update specific combobox based on data binding path
         private void UpdateComboBoxBasedOnPath(ComboBox comboBox, string bindingPath, Student student)
         {
             switch (bindingPath)
@@ -526,6 +544,7 @@ namespace sis_app.Controls.View
             }
         }
 
+        // process and validate edited student data
         private void ProcessEditedData()
         {
             try
@@ -550,6 +569,7 @@ namespace sis_app.Controls.View
             }
         }
 
+        // check if student data has been modified
         private static bool HasChanges(Student current, Student original)
         {
             return current.FirstName != original.FirstName ||
@@ -560,6 +580,7 @@ namespace sis_app.Controls.View
                    current.ProgramCode != original.ProgramCode;
         }
 
+        // revert student data to original state
         private void RevertChanges(Student current, Student original)
         {
             current.FirstName = original.FirstName;
@@ -570,9 +591,9 @@ namespace sis_app.Controls.View
             current.ProgramCode = original.ProgramCode;
             current.CollegeCode = original.CollegeCode;
         }
-        #endregion
 
-        #region Data Management Methods
+        
+        // validate and update student record
         private bool ValidateAndUpdateStudent(Student student, Student originalStudent)
         {
             if (!ValidateEditedData(student))
@@ -589,6 +610,7 @@ namespace sis_app.Controls.View
             return true;
         }
 
+        // check for duplicate student ID numbers
         private bool IsDuplicateIDNumber(Student student)
         {
             return _students.Any(s =>
@@ -596,6 +618,7 @@ namespace sis_app.Controls.View
                 s.IDNumber.Equals(student.IDNumber, StringComparison.OrdinalIgnoreCase));
         }
 
+        // update student's college code based on program
         private void UpdateStudentCollegeCode(Student student)
         {
             if (student.ProgramCode != DELETED_MARKER)
@@ -610,6 +633,7 @@ namespace sis_app.Controls.View
             }
         }
 
+        // show error message for duplicate ID numbers
         private static void ShowDuplicateIDError(string idNumber)
         {
             MessageBox.Show(
@@ -620,6 +644,7 @@ namespace sis_app.Controls.View
             );
         }
 
+        // recursively find visual child elements
         private void FindVisualChildren<T>(DependencyObject parent, List<T> results) where T : DependencyObject
         {
             int count = VisualTreeHelper.GetChildrenCount(parent);
@@ -633,9 +658,8 @@ namespace sis_app.Controls.View
                 FindVisualChildren<T>(child, results);
             }
         }
-        #endregion
 
-        #region Delete Operations
+        // handle deletion of selected students
         private void DeleteSelectedButton_Click(object sender, RoutedEventArgs e)
         {
             var selectedItems = StudentListView.SelectedItems.OfType<Student>().ToList();
@@ -652,6 +676,7 @@ namespace sis_app.Controls.View
             }
         }
 
+        // handle clearing all student data
         private void ClearStudentsButton_Click(object sender, RoutedEventArgs e)
         {
             if (ConfirmClearAll())
@@ -660,6 +685,7 @@ namespace sis_app.Controls.View
             }
         }
 
+        // show message when no students are selected for deletion
         private static void ShowNoSelectionMessage()
         {
             MessageBox.Show(
@@ -670,6 +696,7 @@ namespace sis_app.Controls.View
             );
         }
 
+        // confirm deletion of selected students
         private bool ConfirmDeletion(List<Student> selectedItems)
         {
             string message = BuildDeleteConfirmationMessage(selectedItems.Count);
@@ -682,21 +709,24 @@ namespace sis_app.Controls.View
             ) == MessageBoxResult.Yes;
         }
 
+        // build confirmation message for deletion
         private static string BuildDeleteConfirmationMessage(int count)
         {
             return $"Are you sure you want to delete the selected {count} students?";
         }
 
+        // delete selected students from database and collections
         private void DeleteStudents(List<Student> students)
         {
             foreach (var student in students)
             {
                 _studentDataService.DeleteStudent(student);
                 _students.Remove(student);
-                _allStudents.Remove(student);  
+                _allStudents.Remove(student);
             }
         }
 
+        // confirm clearing all student data
         private static bool ConfirmClearAll()
         {
             return MessageBox.Show(
@@ -707,6 +737,7 @@ namespace sis_app.Controls.View
             ) == MessageBoxResult.Yes;
         }
 
+        // clear all student data from file
         private void ClearAllData()
         {
             try
@@ -724,9 +755,9 @@ namespace sis_app.Controls.View
                 );
             }
         }
-        #endregion
 
-        #region Program Relationship Handlers
+       
+        // handle program deletion and update affected students
         private void HandleProgramDeletion(string programCode)
         {
             var affectedStudents = _students
@@ -745,6 +776,7 @@ namespace sis_app.Controls.View
             }
         }
 
+        // handle college code changes
         private void HandleCollegeCodeChange(string oldCollegeCode, string newCollegeCode)
         {
             var affectedPrograms = _programDataService.GetAllPrograms()
@@ -757,6 +789,7 @@ namespace sis_app.Controls.View
             }
         }
 
+        // handle college deletion
         private void HandleCollegeDeletion(string collegeCode)
         {
             var affectedPrograms = _programDataService.GetAllPrograms()
@@ -769,6 +802,7 @@ namespace sis_app.Controls.View
             }
         }
 
+        // update students affected by college changes
         private void UpdateStudentsForCollegeChange(string programCode, string newCollegeCode)
         {
             var affectedStudents = _students
@@ -782,6 +816,7 @@ namespace sis_app.Controls.View
             }
         }
 
+        // show message about program deletion impact
         private static void ShowProgramDeletionMessage(string programCode, int studentCount)
         {
             MessageBox.Show(
@@ -792,14 +827,14 @@ namespace sis_app.Controls.View
                 MessageBoxImage.Warning
             );
         }
-        #endregion
-
-        #region Sorting Methods
+        
+        // handle sort option changes
         private void SortComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             SortStudents();
         }
 
+        // sort student list based on selected criteria
         private void SortStudents()
         {
             if (SortComboBox.SelectedItem is ComboBoxItem selectedItem)
@@ -808,6 +843,7 @@ namespace sis_app.Controls.View
             }
         }
 
+        // apply sorting based on selected option
         private void ApplySorting(string sortOption)
         {
             switch (sortOption)
@@ -851,6 +887,7 @@ namespace sis_app.Controls.View
             }
         }
 
+        // perform the actual sorting operation
         private void SortList<TKey>(Func<Student, TKey> keySelector, ListSortDirection direction)
         {
             var sortedList = direction == ListSortDirection.Ascending
@@ -864,13 +901,14 @@ namespace sis_app.Controls.View
             }
             StudentListView.Items.Refresh();
         }
-        #endregion
+        
+    
 
-        #region Event Handlers
+
         private void StudentListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            // Implementation if needed
-        }
+                {
+                    // Implementation if needed
+                }
 
         private void ProgramCodeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -924,7 +962,6 @@ namespace sis_app.Controls.View
 
             return true;
         }
-        #endregion
+       
     }
 }
-#endregion
