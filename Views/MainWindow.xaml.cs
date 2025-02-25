@@ -1,4 +1,5 @@
-﻿using System;
+﻿// required namespaces for the application
+using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,36 +12,42 @@ using sis_app.Views;
 namespace sis_app.Views
 {
     /// <summary>
-    /// Main window of the Student Information System application.
-    /// Handles navigation and initialization of all services and controls.
+    /// main window class for the student information system
     /// </summary>
     public partial class MainWindow : Window
     {
-        #region Constants
-        private const string DEFAULT_USER = "Admin";
-        #endregion
 
-        #region Private Fields
+        // default user if none provided
+        private const string DEFAULT_USER = "Admin";
+
+
+
+        // data services for different entities
         private CollegeDataService _collegeDataService;
         private ProgramDataService _programDataService;
         private StudentDataService _studentDataService;
 
+        // controls for adding new entries
         private AddCollegeControl _addCollegeControl;
         private AddProgramControl _addProgramControl;
         private AddStudentControl _addStudentControl;
 
+        // controls for viewing entries
         private ViewCollegesControl _viewCollegesControl;
         private ViewProgramsControl _viewProgramsControl;
         private ViewStudentControl _viewStudentControl;
-            
+
+        // dashboard view control
         private DashboardView _dashboardView;
-        #endregion
 
-        #region Public Properties
+
+
+        // current user of the application
         public string CurrentUser { get; private set; }
-        #endregion
 
-        #region Constructor
+
+ 
+        // main window constructor
         public MainWindow(string username)
         {
             try
@@ -55,9 +62,10 @@ namespace sis_app.Views
                 HandleInitializationError(ex);
             }
         }
-        #endregion
 
-        #region Initialization Methods
+
+
+        // initialize data services
         private void InitializeServices(string username)
         {
             CurrentUser = username ?? DEFAULT_USER;
@@ -67,14 +75,17 @@ namespace sis_app.Views
             _studentDataService = new StudentDataService("students.csv") { CurrentUser = CurrentUser };
         }
 
+        // initialize UI controls
         private void InitializeControls()
         {
             _dashboardView = new DashboardView();
 
+            // initialize add controls
             _addCollegeControl = new AddCollegeControl(_collegeDataService);
             _addProgramControl = new AddProgramControl(_programDataService, _collegeDataService);
             _addStudentControl = new AddStudentControl(_studentDataService, _collegeDataService, _programDataService);
 
+            // initialize view controls
             _viewCollegesControl = new ViewCollegesControl(_collegeDataService);
             _viewProgramsControl = new ViewProgramsControl(_programDataService, _studentDataService)
             {
@@ -83,6 +94,7 @@ namespace sis_app.Views
             _viewStudentControl = new ViewStudentControl(_studentDataService, _programDataService, _collegeDataService);
         }
 
+        // setup initial UI state
         private void InitializeUserInterface()
         {
             LoginStatus.Text = CurrentUser;
@@ -91,6 +103,7 @@ namespace sis_app.Views
             UpdateDirectory("Home");
         }
 
+        // handle initialization errors
         private void HandleInitializationError(Exception ex)
         {
             MessageBox.Show(
@@ -100,14 +113,14 @@ namespace sis_app.Views
                 MessageBoxImage.Error
             );
         }
-        #endregion
 
-        #region Navigation Methods
+        // update directory path display
         private void UpdateDirectory(string page)
         {
             DirectoryText.Text = $" | /{page}";
         }
 
+        // navigation event handlers
         private void NavigateHome_Click(object sender, RoutedEventArgs e)
         {
             MainContent.Content = _dashboardView;
@@ -166,9 +179,8 @@ namespace sis_app.Views
             MainContent.Content = new HistoryView();
             UpdateDirectory("History");
         }
-        #endregion
 
-        #region External Link Methods
+        // handle external link clicks
         private void YouTube_Click(object sender, RoutedEventArgs e)
         {
             OpenExternalLink("https://www.youtube.com/@keane6635");
@@ -184,6 +196,7 @@ namespace sis_app.Views
             OpenExternalLink("https://www.linkedin.com/in/keanepharelle/");
         }
 
+        // open external links in default browser
         private void OpenExternalLink(string url)
         {
             try
@@ -200,9 +213,8 @@ namespace sis_app.Views
                 );
             }
         }
-        #endregion
 
-        #region Settings
+        // placeholder for settings functionality
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show(
@@ -212,6 +224,6 @@ namespace sis_app.Views
                 MessageBoxImage.Information
             );
         }
-        #endregion
+        
     }
 }
