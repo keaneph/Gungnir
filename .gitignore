@@ -1,7 +1,6 @@
 # Visual Studio temporary files, build results, and settings
 [Oo]bj/
 [Bb]in/
-![Bb]in/*.csv
 *.suo
 *.user
 *.pdb
@@ -9,5 +8,6 @@
 *.log
 *.vs/
 *.DS_Store           # OS X
-Thumbs.db             # Windows image file cache
-/packages            # nuget packages
+Thumbs.db           # Windows image file cache
+/packages           # nuget packages
+!/Data/*.csv

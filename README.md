@@ -7,6 +7,12 @@ efficiently manage college records, program information, and student data.
 ## Dashboard Demo
 ![dashboard_demo](https://github.com/user-attachments/assets/03a04c21-567f-4d6a-8ef2-db4922a2edc0)
 
+
+## Note
+
+This project is a work in progress. The current version is a prototype and is intended for demonstration purposes only.
+The file path for the  CSV files can be found in 
+
 ## Features
 
 - **User Authentication**

@@ -13,12 +13,26 @@ namespace sis_app.Services
         private readonly string _filePath;
 
         /// <summary>
-        /// Constructor initializes service and ensures credential file exists
+        /// Constructor initializes service with file path and ensures data directory exists
         /// </summary>
-        /// <param name="filePath">Path to user credentials file</param>
-        public UserDataService(string filePath)
+        /// <param name="fileName">Name of the credentials file</param>
+        public UserDataService(string fileName)
         {
-            _filePath = filePath;
+            // create path to Data folder in project directory
+            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            string projectDirectory = Path.Combine(baseDirectory, "..\\..\\..\\");
+            string dataDirectory = Path.Combine(projectDirectory, "Data");
+
+            // create Data directory if it doesn't exist
+            if (!Directory.Exists(dataDirectory))
+            {
+                Directory.CreateDirectory(dataDirectory);
+            }
+
+            // set full path to csv file
+            _filePath = Path.Combine(dataDirectory, fileName);
+
+            // ensure credentials file exists with header
             EnsureFileExists();
         }
 
@@ -46,16 +60,22 @@ namespace sis_app.Services
             try
             {
                 // skip header row and check credentials
-                var lines = File.ReadAllLines(_filePath).Skip(1);
+                var lines = File.ReadAllLines(_filePath)
+                    .Skip(1)
+                    .Where(l => !string.IsNullOrWhiteSpace(l));
+
                 return lines.Any(line =>
                 {
                     var parts = line.Split(',');
-                    return parts[0] == username && parts[1] == password;
+                    return parts.Length == 2 &&
+                           parts[0] == username &&
+                           parts[1] == password;
                 });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // return false on any file access errors
+                // log error and return false on any file access errors
+                Console.WriteLine($"Error validating user: {ex.Message}");
                 return false;
             }
         }
@@ -71,12 +91,16 @@ namespace sis_app.Services
             try
             {
                 // append new user credentials to file
-                File.AppendAllText(_filePath, $"{username},{password}\n");
+                using (StreamWriter sw = File.AppendText(_filePath))
+                {
+                    sw.WriteLine($"{username},{password}");
+                }
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // return false if registration fails
+                // log error and return false if registration fails
+                Console.WriteLine($"Error registering user: {ex.Message}");
                 return false;
             }
         }
@@ -91,12 +115,20 @@ namespace sis_app.Services
             try
             {
                 // skip header row and check for username
-                var lines = File.ReadAllLines(_filePath).Skip(1);
-                return lines.Any(line => line.Split(',')[0] == username);
+                var lines = File.ReadAllLines(_filePath)
+                    .Skip(1)
+                    .Where(l => !string.IsNullOrWhiteSpace(l));
+
+                return lines.Any(line =>
+                {
+                    var parts = line.Split(',');
+                    return parts.Length > 0 && parts[0] == username;
+                });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // return false on any file access errors
+                // log error and return false on any file access errors
+                Console.WriteLine($"Error checking username: {ex.Message}");
                 return false;
             }
         }

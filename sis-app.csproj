@@ -12,7 +12,6 @@
   <ItemGroup>
     <None Remove="himalayas dark.jpg" />
     <None Remove="Resources\Images\jujutsu.png" />
-    <None Remove="Resources\Images\wp3.jpg" />
     <None Remove="Resources\Images\wp5.jpg" />
     <None Remove="lamp posts.jpg" />
   </ItemGroup>
@@ -21,7 +20,6 @@
     <Resource Include="Resources\Images\himalayas dark.jpg" />
     <Resource Include="Resources\Images\jujutsu.png" />
     <Resource Include="Resources\Images\lamp posts.jpg" />
-    <Resource Include="Resources\Images\wp3.jpg" />
     <Resource Include="Resources\Images\wp5.jpg" />
   </ItemGroup>
 

@@ -15,10 +15,28 @@ namespace sis_app.Services
         // current user performing operations (defaults to "Admin")
         public string CurrentUser { get; set; } = "Admin";
 
-        // constructor initializes service with file path
-        public CollegeDataService(string filePath)
+        // constructor initializes service with file path and ensures data directory exists
+        public CollegeDataService(string fileName)
         {
-            _filePath = filePath;
+            // create path to Data folder in project directory
+            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            string projectDirectory = Path.Combine(baseDirectory, "..\\..\\..\\");
+            string dataDirectory = Path.Combine(projectDirectory, "Data");
+
+            // create Data directory if it doesn't exist
+            if (!Directory.Exists(dataDirectory))
+            {
+                Directory.CreateDirectory(dataDirectory);
+            }
+
+            // set full path to csv file
+            _filePath = Path.Combine(dataDirectory, fileName);
+
+            // create empty file if it doesn't exist
+            if (!File.Exists(_filePath))
+            {
+                File.Create(_filePath).Close();
+            }
         }
 
         // retrieves all colleges from the csv file
@@ -26,16 +44,11 @@ namespace sis_app.Services
         {
             List<College> colleges = new List<College>();
 
-            // return empty list if file doesn't exist
-            if (!File.Exists(_filePath))
-            {
-                return colleges;
-            }
-
             try
             {
                 // read each line and convert to college object
-                foreach (string line in File.ReadLines(_filePath))
+                var lines = File.ReadAllLines(_filePath);
+                foreach (string line in lines.Where(l => !string.IsNullOrWhiteSpace(l)))
                 {
                     colleges.Add(College.FromCsv(line));
                 }
