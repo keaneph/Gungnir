@@ -4,6 +4,7 @@
 *.suo
 *.user
 *.pdb
+!bin/*.csv
 *.cache
 *.log
 *.vs/
