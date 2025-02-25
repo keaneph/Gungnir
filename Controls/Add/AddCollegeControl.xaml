@@ -6,8 +6,10 @@
              xmlns:local="clr-namespace:sis_app.Controls.Add"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    
+
+    <!-- main grid container -->
     <Grid>
+        <!-- centered border with rounded corners -->
         <Border HorizontalAlignment="Center" 
                 VerticalAlignment="Center"
                 Width="400" 
@@ -15,8 +17,9 @@
                 Padding="0,10,0,15" 
                 Opacity="0.95">
 
+            <!-- main content stack panel -->
             <StackPanel Margin="20">
-                <!-- header -->
+                <!-- header text -->
                 <TextBlock Text="Add College" 
                           FontSize="24" 
                           FontWeight="Bold" 
@@ -24,24 +27,28 @@
                           Margin="0,10,0,0" 
                           HorizontalAlignment="Center"/>
 
-                <!-- college name textbox and textblock -->
+                <!-- college name input section -->
                 <StackPanel Orientation="Vertical" Margin="0,20,0,10">
+                    <!-- college name label -->
                     <TextBlock Text="College Name" 
                               Margin="40,0,0,0" 
                               Style="{StaticResource BaseTextBlockStyle}" 
                               HorizontalAlignment="Left"/>
+                    <!-- college name input field -->
                     <TextBox x:Name="CollegeNameTextBox" 
                             Style="{StaticResource BaseTextBoxStyle}"
                             Height="30"
                             PreviewTextInput="CollegeNameTextBox_PreviewTextInput"/>
                 </StackPanel>
 
-                <!-- college code textbox and textblock -->
+                <!-- college code input section -->
                 <StackPanel Orientation="Vertical" Margin="0,10,0,0">
+                    <!-- college code label -->
                     <TextBlock Text="College Code" 
                               Margin="40,0,0,0" 
                               Style="{StaticResource BaseTextBlockStyle}" 
                               HorizontalAlignment="Left"/>
+                    <!-- college code input field -->
                     <TextBox x:Name="CollegeCodeTextBox" 
                             Style="{StaticResource BaseTextBoxStyle}"
                             Height="30"
@@ -49,7 +56,7 @@
                             TextChanged="CollegeCodeTextBox_TextChanged"/>
                 </StackPanel>
 
-                <!-- add college button -->
+                <!-- submit button -->
                 <Button Content="Add College" 
                         x:Name="AddCollegeButton" 
                         Click="AddCollegeButton_Click"
