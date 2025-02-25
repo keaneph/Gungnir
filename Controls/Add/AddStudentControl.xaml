@@ -8,7 +8,9 @@
              d:DesignWidth="600" 
              Height="480">
 
+    <!-- main grid container -->
     <Grid>
+        <!-- centered border with rounded corners -->
         <Border HorizontalAlignment="Center" 
                 VerticalAlignment="Center"
                 Width="550" 
@@ -16,8 +18,9 @@
                 Padding="0,10,0,30" 
                 Opacity="0.95">
 
+            <!-- main content stack panel -->
             <StackPanel Margin="20">
-                <!-- Header -->
+                <!-- header text -->
                 <TextBlock Text="Add Student" 
                           FontSize="24" 
                           FontWeight="Bold" 
@@ -25,6 +28,7 @@
                           Margin="0,10,0,20" 
                           HorizontalAlignment="Center"/>
 
+                <!-- form grid layout -->
                 <Grid Margin="20,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="120"/>
@@ -41,28 +45,31 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <!-- ID Number -->
+                    <!-- id number input section -->
                     <TextBlock Grid.Row="0" Grid.Column="0" 
                               Text="ID Number" 
                               Style="{StaticResource BaseTextBlockStyle}"
                               VerticalAlignment="Center"/>
                     <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+                        <!-- year part of id -->
                         <TextBox x:Name="YearTextBox" 
                                 Margin="35,0,0,0"
                                 Width="130"
                                 Style="{StaticResource BaseTextBoxStyle}"
                                 PreviewTextInput="YearTextBox_PreviewTextInput"/>
+                        <!-- separator -->
                         <TextBlock Text="-" 
                                  Style="{StaticResource BaseTextBlockStyle}"
                                  VerticalAlignment="Center" 
                                  Margin="10,0"/>
+                        <!-- number part of id -->
                         <TextBox x:Name="NumberTextBox" 
                                 Width="120"
                                 Style="{StaticResource BaseTextBoxStyle}"
                                 PreviewTextInput="NumberTextBox_PreviewTextInput"/>
                     </StackPanel>
 
-                    <!-- First Name -->
+                    <!-- first name input -->
                     <TextBlock Grid.Row="1" Grid.Column="0" 
                               Text="First Name"
                               Style="{StaticResource BaseTextBlockStyle}"
@@ -72,7 +79,7 @@
                             Style="{StaticResource BaseTextBoxStyle}"
                             PreviewTextInput="FirstNameTextBox_PreviewTextInput"/>
 
-                    <!-- Last Name -->
+                    <!-- last name input -->
                     <TextBlock Grid.Row="2" Grid.Column="0" 
                               Text="Last Name"
                               Style="{StaticResource BaseTextBlockStyle}"
@@ -82,7 +89,7 @@
                             Style="{StaticResource BaseTextBoxStyle}"
                             PreviewTextInput="LastNameTextBox_PreviewTextInput"/>
 
-                    <!-- Year Level -->
+                    <!-- year level dropdown -->
                     <TextBlock Grid.Row="3" Grid.Column="0" 
                               Text="Year Level"
                               Style="{StaticResource BaseTextBlockStyle}"
@@ -96,7 +103,7 @@
                         <ComboBoxItem Content="4"/>
                     </ComboBox>
 
-                    <!-- Gender -->
+                    <!-- gender dropdown -->
                     <TextBlock Grid.Row="4" Grid.Column="0" 
                               Text="Gender"
                               Style="{StaticResource BaseTextBlockStyle}"
@@ -108,7 +115,7 @@
                         <ComboBoxItem Content="Female"/>
                     </ComboBox>
 
-                    <!-- Program Code -->
+                    <!-- program code dropdown -->
                     <TextBlock Grid.Row="5" Grid.Column="0" 
                               Text="Program Code"
                               Style="{StaticResource BaseTextBlockStyle}"
@@ -118,7 +125,7 @@
                              Style="{StaticResource BaseComboBoxStyle}"
                              SelectionChanged="ProgramCodeComboBox_SelectionChanged"/>
 
-                    <!-- College Code -->
+                    <!-- college code dropdown (disabled) -->
                     <TextBlock Grid.Row="6" Grid.Column="0" 
                               Text="College Code"
                               Style="{StaticResource BaseTextBlockStyle}"
@@ -128,7 +135,7 @@
                              Style="{StaticResource BaseComboBoxStyle}"
                              IsEnabled="False"/>
 
-                    <!-- Add Button -->
+                    <!-- submit button -->
                     <Button Grid.Row="7" Grid.Column="1"
                             Content="Add Student"
                             x:Name="AddStudentButton"

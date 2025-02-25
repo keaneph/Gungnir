@@ -20,18 +20,24 @@ namespace sis_app.Controls.View
     public partial class ViewCollegesControl : UserControl
     {
         #region Constants
+        // maximum lengths for input validation
         private const int MAX_COLLEGE_NAME_LENGTH = 27;
         private const int MAX_COLLEGE_CODE_LENGTH = 9;
         private const int MIN_CODE_LENGTH = 2;
+        // marker for deleted college references
         private const string DELETED_MARKER = "DELETED";
         #endregion
 
         #region Private Fields
+        // main data services for college and program management
         private readonly CollegeDataService _collegeDataService;
         private readonly ProgramDataService _programDataService;
+
+        // collections for managing college data
         private readonly ObservableCollection<College> _colleges;
         private readonly Dictionary<College, College> _originalCollegeData;
-        // New fields for search functionality
+
+        // search functionality support
         private ObservableCollection<College> _allColleges;
         private string _currentSearchText = string.Empty;
         #endregion
@@ -41,10 +47,11 @@ namespace sis_app.Controls.View
         {
             InitializeComponent();
 
+            // initialize services and collections
             _collegeDataService = collegeDataService ?? throw new ArgumentNullException(nameof(collegeDataService));
             _programDataService = new ProgramDataService("programs.csv");
             _colleges = new ObservableCollection<College>();
-            _allColleges = new ObservableCollection<College>(); // Add this line
+            _allColleges = new ObservableCollection<College>();
             _originalCollegeData = new Dictionary<College, College>();
 
             InitializeUserInterface();
@@ -54,6 +61,7 @@ namespace sis_app.Controls.View
         #region Initialization Methods
         private void InitializeUserInterface()
         {
+            // setup initial UI state
             CollegeListView.ItemsSource = _colleges;
             LoadColleges();
             SortComboBox.SelectedIndex = 0;
@@ -65,6 +73,7 @@ namespace sis_app.Controls.View
         {
             try
             {
+                // load and populate college collections
                 var colleges = _collegeDataService.GetAllColleges();
                 _allColleges = new ObservableCollection<College>(colleges);
 
@@ -74,7 +83,7 @@ namespace sis_app.Controls.View
                     _colleges.Add(college);
                 }
 
-                // Apply any existing search filter
+                // maintain search state
                 if (!string.IsNullOrWhiteSpace(_currentSearchText))
                 {
                     ApplySearch();
@@ -94,6 +103,7 @@ namespace sis_app.Controls.View
         #region Search Functionality
         public void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
+            // update search text and filter
             _currentSearchText = SearchBox.Text.Trim().ToLower();
             ApplySearch();
         }
@@ -104,6 +114,7 @@ namespace sis_app.Controls.View
             {
                 if (string.IsNullOrWhiteSpace(_currentSearchText))
                 {
+                    // show all colleges if search is empty
                     _colleges.Clear();
                     foreach (var college in _allColleges)
                     {
@@ -112,6 +123,7 @@ namespace sis_app.Controls.View
                 }
                 else
                 {
+                    // filter colleges by name or code
                     var filteredColleges = _allColleges.Where(college =>
                         college.Name.ToLower().Contains(_currentSearchText) ||
                         college.Code.ToLower().Contains(_currentSearchText)
@@ -128,34 +140,29 @@ namespace sis_app.Controls.View
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"Error during search: {ex.Message}",
-                    "Search Error",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error
-                );
+                MessageBox.Show($"Error during search: {ex.Message}", "Search Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         #endregion
 
         private void HandleLoadError(Exception ex)
         {
-            MessageBox.Show(
-                $"Error loading colleges: {ex.Message}",
-                "Load Error",
-                MessageBoxButton.OK,
-                MessageBoxImage.Error
-            );
+            // display error message for loading failures
+            MessageBox.Show($"Error loading colleges: {ex.Message}", "Load Error",
+                MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         #region Input Validation Methods
         private void CollegeNameTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
+            // validate name input - letters only
             e.Handled = !IsValidNameInput(e.Text);
         }
 
         private void CollegeCodeTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
+            // validate code input - letters only
             e.Handled = !IsValidCodeInput(e.Text);
         }
 
@@ -175,6 +182,7 @@ namespace sis_app.Controls.View
         {
             if (sender is TextBox textBox)
             {
+                // enforce name length limit
                 EnforceLengthLimit(textBox, MAX_COLLEGE_NAME_LENGTH);
             }
         }
@@ -184,8 +192,9 @@ namespace sis_app.Controls.View
             if (sender is TextBox textBox)
             {
                 int caretIndex = textBox.CaretIndex;
-                string newText = textBox.Text.ToUpper();
 
+                // convert to uppercase and apply rules
+                string newText = textBox.Text.ToUpper();
                 newText = EnforceCodeRules(newText);
 
                 textBox.Text = newText;
@@ -195,6 +204,7 @@ namespace sis_app.Controls.View
 
         private static void EnforceLengthLimit(TextBox textBox, int maxLength)
         {
+            // trim text to maximum length
             if (textBox.Text.Length > maxLength)
             {
                 textBox.Text = textBox.Text.Substring(0, maxLength);
@@ -204,6 +214,7 @@ namespace sis_app.Controls.View
 
         private static string EnforceCodeRules(string text)
         {
+            // keep only letters and enforce length limit
             return new string(text.Where(char.IsLetter).Take(MAX_COLLEGE_CODE_LENGTH).ToArray());
         }
         #endregion
@@ -211,13 +222,16 @@ namespace sis_app.Controls.View
         #region Edit Mode Handlers
         private void EditModeToggleButton_Checked(object sender, RoutedEventArgs e)
         {
+            // backup original data before editing
             StoreOriginalData();
         }
 
         private void EditModeToggleButton_Unchecked(object sender, RoutedEventArgs e)
         {
+            // validate and save changes
             ProcessEditedData();
-            // Reapply search after edit mode
+
+            // maintain search state
             if (!string.IsNullOrWhiteSpace(_currentSearchText))
             {
                 ApplySearch();
@@ -226,6 +240,7 @@ namespace sis_app.Controls.View
 
         private void StoreOriginalData()
         {
+            // create backup of current data
             _originalCollegeData.Clear();
             foreach (var college in _colleges)
             {
@@ -246,9 +261,11 @@ namespace sis_app.Controls.View
                 if (!_originalCollegeData.TryGetValue(college, out College originalCollege))
                     continue;
 
+                // process only changed items
                 if (!HasChanges(college, originalCollege))
                     continue;
 
+                // validate and update or revert changes
                 if (!ValidateAndUpdateCollege(college, originalCollege))
                 {
                     RevertChanges(college, originalCollege);
@@ -264,6 +281,7 @@ namespace sis_app.Controls.View
 
         private void RevertChanges(College current, College original)
         {
+            // restore original values
             current.Name = original.Name;
             current.Code = original.Code;
         }
@@ -272,15 +290,18 @@ namespace sis_app.Controls.View
         #region Validation Methods
         private bool ValidateAndUpdateCollege(College college, College originalCollege)
         {
+            // perform all validations
             if (!ValidateEditedData(college))
                 return false;
 
+            // check for duplicate codes
             if (IsDuplicateCode(college))
             {
                 ShowDuplicateCodeError(college.Code);
                 return false;
             }
 
+            // update college and related programs
             UpdateRelatedPrograms(originalCollege.Code, college.Code);
             _collegeDataService.UpdateCollege(originalCollege, college);
             return true;
@@ -288,6 +309,7 @@ namespace sis_app.Controls.View
 
         private bool ValidateEditedData(College college)
         {
+            // validate name
             if (string.IsNullOrWhiteSpace(college.Name))
             {
                 ShowValidationError("College name cannot be empty.");
@@ -300,6 +322,7 @@ namespace sis_app.Controls.View
                 return false;
             }
 
+            // validate code
             if (string.IsNullOrWhiteSpace(college.Code))
             {
                 ShowValidationError("College code cannot be empty.");
@@ -318,6 +341,7 @@ namespace sis_app.Controls.View
                 return false;
             }
 
+            // validate character types
             if (!college.Name.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
             {
                 ShowValidationError("College name can only contain letters and spaces.");
@@ -335,6 +359,7 @@ namespace sis_app.Controls.View
 
         private bool IsDuplicateCode(College college)
         {
+            // check if code already exists
             return _colleges.Any(c =>
                 c != college &&
                 c.Code.Equals(college.Code, StringComparison.OrdinalIgnoreCase));
@@ -342,28 +367,21 @@ namespace sis_app.Controls.View
 
         private static void ShowValidationError(string message)
         {
-            MessageBox.Show(
-                message,
-                "Validation Error",
-                MessageBoxButton.OK,
-                MessageBoxImage.Warning
-            );
+            MessageBox.Show(message, "Validation Error",
+                MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
         private static void ShowDuplicateCodeError(string code)
         {
-            MessageBox.Show(
-                $"A college with code '{code}' already exists.",
-                "Duplicate Code Error",
-                MessageBoxButton.OK,
-                MessageBoxImage.Error
-            );
+            MessageBox.Show($"A college with code '{code}' already exists.",
+                "Duplicate Code Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         #endregion
 
         #region Data Management Methods
         private void UpdateRelatedPrograms(string oldCode, string newCode)
         {
+            // find programs using the old college code
             var affectedPrograms = _programDataService.GetAllPrograms()
                 .Where(p => p.CollegeCode.Equals(oldCode, StringComparison.OrdinalIgnoreCase))
                 .ToList();
@@ -372,6 +390,7 @@ namespace sis_app.Controls.View
 
             ShowProgramsUpdatedMessage(oldCode, newCode, affectedPrograms.Count);
 
+            // update programs with new college code
             foreach (var program in affectedPrograms)
             {
                 program.CollegeCode = newCode;
@@ -383,10 +402,7 @@ namespace sis_app.Controls.View
         {
             MessageBox.Show(
                 $"College code updated from '{oldCode}' to '{newCode}'. {count} associated programs have been updated.",
-                "Programs Updated",
-                MessageBoxButton.OK,
-                MessageBoxImage.Information
-            );
+                "Programs Updated", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         #endregion
 
@@ -417,25 +433,18 @@ namespace sis_app.Controls.View
 
         private static void ShowNoSelectionMessage()
         {
-            MessageBox.Show(
-                "Please select colleges to delete.",
-                "Information",
-                MessageBoxButton.OK,
-                MessageBoxImage.Information
-            );
+            MessageBox.Show("Please select colleges to delete.",
+                "Information", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private bool ConfirmDeletion(List<College> selectedItems)
         {
+            // check for affected programs
             var affectedPrograms = GetAffectedPrograms(selectedItems);
             string message = BuildDeleteConfirmationMessage(selectedItems.Count, affectedPrograms.Count);
 
-            return MessageBox.Show(
-                message,
-                "Confirmation",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning
-            ) == MessageBoxResult.Yes;
+            return MessageBox.Show(message, "Confirmation",
+                MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
         }
 
         private void DeleteColleges(List<College> colleges)
@@ -448,10 +457,12 @@ namespace sis_app.Controls.View
 
         private void DeleteCollegeAndUpdatePrograms(College college)
         {
+            // remove college from all collections
             _collegeDataService.DeleteCollege(college);
             _colleges.Remove(college);
-            _allColleges.Remove(college);  // Add this line
+            _allColleges.Remove(college);
 
+            // mark related programs as deleted
             var affectedPrograms = _programDataService.GetAllPrograms()
                 .Where(p => p.CollegeCode.Equals(college.Code, StringComparison.OrdinalIgnoreCase))
                 .ToList();
@@ -465,6 +476,7 @@ namespace sis_app.Controls.View
 
         private List<Program> GetAffectedPrograms(List<College> colleges)
         {
+            // find all programs using the selected colleges
             return _programDataService.GetAllPrograms()
                 .Where(p => colleges.Any(c =>
                     c.Code.Equals(p.CollegeCode, StringComparison.OrdinalIgnoreCase)))
@@ -485,28 +497,22 @@ namespace sis_app.Controls.View
         {
             return MessageBox.Show(
                 "Warning: Clearing colleges will also affect programs using these college codes. Continue?",
-                "Confirmation",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning
-            ) == MessageBoxResult.Yes;
+                "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
         }
 
         private void ClearAllData()
         {
             try
             {
+                // clear both data files
                 File.WriteAllText("colleges.csv", string.Empty);
                 File.WriteAllText("programs.csv", string.Empty);
                 LoadColleges();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"Error clearing college data: {ex.Message}",
-                    "Error",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error
-                );
+                MessageBox.Show($"Error clearing college data: {ex.Message}",
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         #endregion
@@ -527,6 +533,7 @@ namespace sis_app.Controls.View
 
         private void ApplySorting(string sortOption)
         {
+            // apply selected sort option
             switch (sortOption)
             {
                 case "Date and Time Modified (Oldest First)":
@@ -549,6 +556,7 @@ namespace sis_app.Controls.View
 
         private void SortList<TKey>(Func<College, TKey> keySelector, ListSortDirection direction)
         {
+            // sort and refresh the list view
             var sortedList = direction == ListSortDirection.Ascending
                 ? _colleges.OrderBy(keySelector).ToList()
                 : _colleges.OrderByDescending(keySelector).ToList();

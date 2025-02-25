@@ -6,13 +6,16 @@
              xmlns:local="clr-namespace:sis_app.Controls.View"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
+    <!-- main grid container -->
     <Grid>
+        <!-- centered border with rounded corners -->
         <Border HorizontalAlignment="Center" 
                 VerticalAlignment="Center"
                 Width="600" 
                 CornerRadius="15" 
                 Padding="0,10,0,15">
 
+            <!-- main content grid -->
             <Grid Margin="20">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -20,21 +23,21 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <!-- top panel -->
+                <!-- top panel with search and sort -->
                 <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- Search Box -->
+                    <!-- search box -->
                     <TextBox x:Name="SearchBox" 
                      Grid.Column="0"
                      Margin="-90,0,0,0"
                      Style="{StaticResource SearchBoxStyle}"
-                     TextChanged="SearchBox_TextChanged"/>  
+                     TextChanged="SearchBox_TextChanged"/>
 
-                    <!-- Sort ComboBox -->
+                    <!-- sort dropdown -->
                     <ComboBox x:Name="SortComboBox" 
                               Grid.Column="1"
                               Width="235" 
@@ -49,7 +52,7 @@
                     </ComboBox>
                 </Grid>
 
-                <!-- listview (or da table) -->
+                <!-- main data listview -->
                 <ListView x:Name="CollegeListView" 
                           Grid.Row="1" 
                           Margin="0,10"                         
@@ -57,6 +60,7 @@
                           Style="{StaticResource CustomListViewStyle}">
                     <ListView.View>
                         <GridView>
+                            <!-- college name column -->
                             <GridViewColumn Header="College Name" Width="200" >
                                 <GridViewColumn.HeaderContainerStyle>
                                     <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource HeaderStyle}"/>
@@ -71,6 +75,7 @@
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
 
+                            <!-- college code column -->
                             <GridViewColumn Header="College Code" Width="100">
                                 <GridViewColumn.HeaderContainerStyle>
                                     <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource HeaderStyle}"/>
@@ -87,6 +92,7 @@
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
 
+                            <!-- date and time column -->
                             <GridViewColumn Header="Date and Time" Width="150">
                                 <GridViewColumn.HeaderContainerStyle>
                                     <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource HeaderStyle}"/>
@@ -100,6 +106,7 @@
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
 
+                            <!-- user column -->
                             <GridViewColumn Header="User" Width="100">
                                 <GridViewColumn.HeaderContainerStyle>
                                     <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource HeaderStyle}"/>
@@ -116,7 +123,7 @@
                     </ListView.View>
                 </ListView>
 
-                <!-- bottom Panel -->
+                <!-- bottom control panel -->
                 <Grid Grid.Row="2" Margin="0,10" >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -136,7 +143,7 @@
                                 Style="{StaticResource DeleteSelectedStyle}"/>
                     </StackPanel>
 
-                    <!-- right-aligned button -->
+                    <!-- edit mode toggle button -->
                     <ToggleButton Grid.Column="1"
                                   x:Name="EditModeToggleButton" 
                                   Content="Enable Edit Mode" 

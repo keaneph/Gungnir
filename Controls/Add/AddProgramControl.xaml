@@ -7,7 +7,9 @@
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
 
+    <!-- main grid container -->
     <Grid>
+        <!-- centered border with rounded corners -->
         <Border HorizontalAlignment="Center" 
                 VerticalAlignment="Center"
                 Width="400" 
@@ -15,8 +17,9 @@
                 Padding="0,10,0,15" 
                 Opacity="0.95">
 
+            <!-- main content stack panel -->
             <StackPanel Margin="20">
-                <!-- Header -->
+                <!-- header text -->
                 <TextBlock Text="Add Program" 
                           FontSize="24" 
                           FontWeight="Bold" 
@@ -24,24 +27,28 @@
                           Margin="0,10,0,0" 
                           HorizontalAlignment="Center"/>
 
-                <!-- Program Name Field -->
+                <!-- program name input section -->
                 <StackPanel Orientation="Vertical" Margin="0,20,0,10">
+                    <!-- program name label -->
                     <TextBlock Text="Program Name" 
                               Margin="40,0,0,0" 
                               Style="{StaticResource BaseTextBlockStyle}" 
                               HorizontalAlignment="Left"/>
+                    <!-- program name input field -->
                     <TextBox x:Name="ProgramNameTextBox" 
                             Style="{StaticResource BaseTextBoxStyle}"
                             Height="30"
                             PreviewTextInput="ProgramNameTextBox_PreviewTextInput"/>
                 </StackPanel>
 
-                <!-- Program Code Field -->
+                <!-- program code input section -->
                 <StackPanel Orientation="Vertical" Margin="0,10,0,10">
+                    <!-- program code label -->
                     <TextBlock Text="Program Code" 
                               Margin="40,0,0,0" 
                               Style="{StaticResource BaseTextBlockStyle}" 
                               HorizontalAlignment="Left"/>
+                    <!-- program code input field -->
                     <TextBox x:Name="ProgramCodeTextBox" 
                             Style="{StaticResource BaseTextBoxStyle}"
                             Height="30"
@@ -49,17 +56,19 @@
                             TextChanged="ProgramCodeTextBox_TextChanged"/>
                 </StackPanel>
 
-                <!-- College Code Field -->
+                <!-- college code input section -->
                 <StackPanel Orientation="Vertical" Margin="0,10,0,0">
+                    <!-- college code label -->
                     <TextBlock Text="College Code" 
                               Margin="40,0,0,0" 
                               Style="{StaticResource BaseTextBlockStyle}" 
                               HorizontalAlignment="Left"/>
+                    <!-- college code dropdown -->
                     <ComboBox x:Name="CollegeCodeComboBox" 
                              Style="{StaticResource BaseComboBoxStyle}"/>
                 </StackPanel>
 
-                <!-- Add Button -->
+                <!-- submit button -->
                 <Button Content="Add Program" 
                         x:Name="AddProgramButton" 
                         Click="AddProgramButton_Click"
