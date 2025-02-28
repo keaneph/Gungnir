@@ -19,8 +19,8 @@ To access the application, use the following credentials:
 
 You can also register a new account by clicking the "Register" button.
 
-If you are encountering the issue where it says "Run a NuGet package restore to generate this file", please follow the steps below:
-- From Tools > NuGet Package Manager > Package Manager Console simply run:
+If you are encountering an issue where it says "Run a NuGet package restore to generate this file", please follow the steps below:
+- (Based in Visual Studio) From Tools > NuGet Package Manager > Package Manager Console simply run:
 
 ```
 dotnet restore
