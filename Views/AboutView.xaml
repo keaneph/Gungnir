@@ -1,4 +1,4 @@
-<!-- about view user control - displays application information and details -->
+<!-- about view for app information -->
 <UserControl x:Class="sis_app.Views.AboutView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -8,16 +8,16 @@
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
 
-    <!-- main border container with rounded corners -->
+    <!-- main container -->
     <Border HorizontalAlignment="Center" 
             VerticalAlignment="Center"
             Width="600" 
             CornerRadius="15" 
             Padding="30">
 
-        <!-- main content stack panel -->
+        <!-- content stack -->
         <StackPanel>
-            <!-- application name header -->
+            <!-- app name -->
             <TextBlock Text="GUNGNIR"
                       Style="{StaticResource BaseTextBlockStyle}"
                       FontSize="48"
@@ -25,14 +25,14 @@
                       HorizontalAlignment="Center"
                       Margin="0,0,0,10"/>
 
-            <!-- application type subheader -->
+            <!-- app type -->
             <TextBlock Text="Student Information System"
                       Style="{StaticResource BaseTextBlockStyle}"
                       FontSize="20"
                       HorizontalAlignment="Center"
                       Margin="0,0,0,5"/>
 
-            <!-- version number -->
+            <!-- version -->
             <TextBlock Text="Version 1.0"
                       Style="{StaticResource BaseTextBlockStyle}"
                       FontSize="14"
@@ -40,7 +40,7 @@
                       HorizontalAlignment="Center"
                       Margin="0,0,0,20"/>
 
-            <!-- application description text -->
+            <!-- description -->
             <TextBlock Style="{StaticResource BaseTextBlockStyle}"
                       TextWrapping="Wrap"
                       Margin="20,0,20,20"
@@ -50,14 +50,14 @@
                 program information, and student data.
             </TextBlock>
 
-            <!-- two-column grid for features and technologies -->
+            <!-- two-column layout -->
             <Grid Margin="0,0,0,20">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- left column - key features list -->
+                <!-- features list -->
                 <StackPanel Grid.Column="0" Margin="0,0,10,0" HorizontalAlignment="Center">
                     <TextBlock Text="Key Features"
                               Style="{StaticResource BaseTextBlockStyle}"
@@ -66,7 +66,6 @@
                               Margin="0,0,0,10"
                               TextAlignment="Center"/>
 
-                    <!-- features list with line breaks -->
                     <TextBlock Style="{StaticResource BaseTextBlockStyle}"
                               FontSize="14"
                               TextWrapping="Wrap"
@@ -78,7 +77,7 @@
                     </TextBlock>
                 </StackPanel>
 
-                <!-- right column - technologies used -->
+                <!-- technologies list -->
                 <StackPanel Grid.Column="1" Margin="10,0,0,0">
                     <TextBlock Text="Built With"
                               Style="{StaticResource BaseTextBlockStyle}"
@@ -87,7 +86,6 @@
                               Margin="0,0,0,10"
                               TextAlignment="Center"/>
 
-                    <!-- technologies list with line breaks -->
                     <TextBlock Style="{StaticResource BaseTextBlockStyle}"
                               FontSize="14"
                               TextWrapping="Wrap"
@@ -100,7 +98,7 @@
                 </StackPanel>
             </Grid>
 
-            <!-- copyright notice at bottom -->
+            <!-- copyright -->
             <TextBlock Text="2025 Keane Ledesma. All rights reserved."
                       Style="{StaticResource BaseTextBlockStyle}"
                       FontSize="12"
