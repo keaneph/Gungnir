@@ -11,7 +11,22 @@ efficiently manage college records, program information, and student data.
 ## Note
 
 This project is a work in progress. The current version is a prototype and is intended for demonstration purposes only.
-The file path for the  CSV files can be found in 
+The CSV files can be found in the folder "Data".
+
+To access the application, use the following credentials:
+- Username: admin
+- Password: admin
+
+You can also register a new account by clicking the "Register" button.
+
+If you are encountering the issue where it says "Run a NuGet package restore to generate this file", please follow the steps below:
+- From Tools > NuGet Package Manager > Package Manager Console simply run:
+
+```
+dotnet restore
+```
+
+The error occurs because the dotnet command line interface does not create all of the required files initially. Doing "dotnet restore" adds the required files.
 
 ## Features
 
