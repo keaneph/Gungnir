@@ -14,10 +14,6 @@ using sis_app.Services;
 
 namespace sis_app.Controls.View
 {
-    /// <summary>
-    /// Control for viewing and managing program data in the Student Information System.
-    /// Handles CRUD operations and maintains relationships with colleges and students.
-    /// </summary>
     public partial class ViewProgramsControl : UserControl
     {
         // constants for validation and data management

@@ -776,7 +776,7 @@ namespace sis_app.Controls.View
             }
         }
 
-        // handle college code changes
+        // handle college code changes for history shi
         private void HandleCollegeCodeChange(string oldCollegeCode, string newCollegeCode)
         {
             var affectedPrograms = _programDataService.GetAllPrograms()
@@ -789,7 +789,7 @@ namespace sis_app.Controls.View
             }
         }
 
-        // handle college deletion
+        // handle college deletion for history shi
         private void HandleCollegeDeletion(string collegeCode)
         {
             var affectedPrograms = _programDataService.GetAllPrograms()
@@ -907,7 +907,7 @@ namespace sis_app.Controls.View
 
         private void StudentListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
                 {
-                    // Implementation if needed
+                    // for history shi
                 }
 
         private void ProgramCodeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

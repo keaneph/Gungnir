@@ -79,7 +79,7 @@ namespace sis_app.Views
         // handle username text changes
         private void UsernameTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            // placeholder for username validation
+            // placeholder for username validation for history shi
         }
     }
 }

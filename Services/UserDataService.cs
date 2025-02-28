@@ -4,18 +4,11 @@ using System.Linq;
 
 namespace sis_app.Services
 {
-    /// <summary>
-    /// Service class to handle user authentication and registration operations
-    /// </summary>
     public class UserDataService
     {
         // path to csv file storing user credentials
         internal readonly string _filePath;
 
-        /// <summary>
-        /// Constructor initializes service with file path and ensures data directory exists
-        /// </summary>
-        /// <param name="fileName">Name of the credentials file</param>
         public UserDataService(string fileName)
         {
             // create path to Data folder in project directory
@@ -36,10 +29,6 @@ namespace sis_app.Services
             EnsureFileExists();
         }
 
-        /// <summary>
-        /// Creates credentials file if it doesn't exist
-        /// Initializes with header row for CSV structure
-        /// </summary>
         private void EnsureFileExists()
         {
             if (!File.Exists(_filePath))
@@ -49,12 +38,6 @@ namespace sis_app.Services
             }
         }
 
-        /// <summary>
-        /// Validates user credentials against stored data
-        /// </summary>
-        /// <param name="username">User's username</param>
-        /// <param name="password">User's password</param>
-        /// <returns>True if credentials are valid, false otherwise</returns>
         public bool ValidateUser(string username, string password)
         {
             try
@@ -80,12 +63,6 @@ namespace sis_app.Services
             }
         }
 
-        /// <summary>
-        /// Registers a new user in the system
-        /// </summary>
-        /// <param name="username">New user's username</param>
-        /// <param name="password">New user's password</param>
-        /// <returns>True if registration successful, false otherwise</returns>
         public bool RegisterUser(string username, string password)
         {
             try
@@ -105,11 +82,6 @@ namespace sis_app.Services
             }
         }
 
-        /// <summary>
-        /// Checks if username is already taken
-        /// </summary>
-        /// <param name="username">Username to check</param>
-        /// <returns>True if username exists, false otherwise</returns>
         public bool UsernameExists(string username)
         {
             try

@@ -11,9 +11,6 @@ using sis_app.Views;
 
 namespace sis_app.Views
 {
-    /// <summary>
-    /// main window class for the student information system
-    /// </summary>
     public partial class MainWindow : Window
     {
 

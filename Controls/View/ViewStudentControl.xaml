@@ -1,4 +1,3 @@
-<!-- main usercontrol for student information management -->
 <UserControl x:Class="sis_app.Controls.View.ViewStudentControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"

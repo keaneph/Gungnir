@@ -67,7 +67,6 @@ namespace sis_app.Services
         {
             try
             {
-                // append new college to file using streamwriter
                 // using statement ensures proper resource disposal
                 using (StreamWriter sw = File.AppendText(_filePath))
                 {
@@ -77,7 +76,7 @@ namespace sis_app.Services
             catch (Exception ex)
             {
                 Console.WriteLine($"Error adding college: {ex.Message}");
-                throw; // rethrow to notify caller of failure
+                throw; 
             }
         }
 

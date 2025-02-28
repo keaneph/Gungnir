@@ -13,10 +13,6 @@ using sis_app.Services;
 
 namespace sis_app.Controls.View
 {
-    /// <summary>
-    /// Control for viewing and managing college data in the Student Information System.
-    /// Handles CRUD operations and maintains relationships with programs.
-    /// </summary>
     public partial class ViewCollegesControl : UserControl
     {
 
@@ -485,7 +481,7 @@ namespace sis_app.Controls.View
         {
             try
             {
-                // Clear only college data
+                // clear only college data
                 File.WriteAllText(_collegeDataService._filePath, string.Empty);
                 LoadColleges();
 

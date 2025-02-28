@@ -67,7 +67,6 @@ namespace sis_app.Services
         {
             try
             {
-                // append new program to file using streamwriter
                 // using statement ensures proper resource disposal
                 using (StreamWriter sw = File.AppendText(_filePath))
                 {
