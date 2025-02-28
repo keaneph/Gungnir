@@ -10,7 +10,7 @@ namespace sis_app.Services
     public class UserDataService
     {
         // path to csv file storing user credentials
-        private readonly string _filePath;
+        internal readonly string _filePath;
 
         /// <summary>
         /// Constructor initializes service with file path and ensures data directory exists

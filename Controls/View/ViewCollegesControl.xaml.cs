@@ -19,16 +19,14 @@ namespace sis_app.Controls.View
     /// </summary>
     public partial class ViewCollegesControl : UserControl
     {
-        #region Constants
+
         // maximum lengths for input validation
         private const int MAX_COLLEGE_NAME_LENGTH = 27;
         private const int MAX_COLLEGE_CODE_LENGTH = 9;
         private const int MIN_CODE_LENGTH = 2;
+
         // marker for deleted college references
         private const string DELETED_MARKER = "DELETED";
-        #endregion
-
-        #region Private Fields
         // main data services for college and program management
         private readonly CollegeDataService _collegeDataService;
         private readonly ProgramDataService _programDataService;
@@ -40,9 +38,7 @@ namespace sis_app.Controls.View
         // search functionality support
         private ObservableCollection<College> _allColleges;
         private string _currentSearchText = string.Empty;
-        #endregion
 
-        #region Constructor
         public ViewCollegesControl(CollegeDataService collegeDataService)
         {
             InitializeComponent();
@@ -56,9 +52,6 @@ namespace sis_app.Controls.View
 
             InitializeUserInterface();
         }
-        #endregion
-
-        #region Initialization Methods
         private void InitializeUserInterface()
         {
             // setup initial UI state
@@ -66,9 +59,7 @@ namespace sis_app.Controls.View
             LoadColleges();
             SortComboBox.SelectedIndex = 0;
         }
-        #endregion
 
-        #region Data Loading Methods
         public void LoadColleges()
         {
             try
@@ -98,9 +89,6 @@ namespace sis_app.Controls.View
                 HandleLoadError(ex);
             }
         }
-        #endregion
-
-        #region Search Functionality
         public void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             // update search text and filter
@@ -144,7 +132,6 @@ namespace sis_app.Controls.View
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        #endregion
 
         private void HandleLoadError(Exception ex)
         {
@@ -153,7 +140,6 @@ namespace sis_app.Controls.View
                 MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
-        #region Input Validation Methods
         private void CollegeNameTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             // validate name input - letters only
@@ -175,9 +161,6 @@ namespace sis_app.Controls.View
         {
             return text.All(c => char.IsLetter(c));
         }
-        #endregion
-
-        #region Text Change Handlers
         private void CollegeNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (sender is TextBox textBox)
@@ -217,9 +200,6 @@ namespace sis_app.Controls.View
             // keep only letters and enforce length limit
             return new string(text.Where(char.IsLetter).Take(MAX_COLLEGE_CODE_LENGTH).ToArray());
         }
-        #endregion
-
-        #region Edit Mode Handlers
         private void EditModeToggleButton_Checked(object sender, RoutedEventArgs e)
         {
             // backup original data before editing
@@ -285,9 +265,6 @@ namespace sis_app.Controls.View
             current.Name = original.Name;
             current.Code = original.Code;
         }
-        #endregion
-
-        #region Validation Methods
         private bool ValidateAndUpdateCollege(College college, College originalCollege)
         {
             // perform all validations
@@ -376,9 +353,6 @@ namespace sis_app.Controls.View
             MessageBox.Show($"A college with code '{code}' already exists.",
                 "Duplicate Code Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
-        #endregion
-
-        #region Data Management Methods
         private void UpdateRelatedPrograms(string oldCode, string newCode)
         {
             // find programs using the old college code
@@ -404,9 +378,6 @@ namespace sis_app.Controls.View
                 $"College code updated from '{oldCode}' to '{newCode}'. {count} associated programs have been updated.",
                 "Programs Updated", MessageBoxButton.OK, MessageBoxImage.Information);
         }
-        #endregion
-
-        #region Delete Operations
         private void DeleteSelectedButton_Click(object sender, RoutedEventArgs e)
         {
             var selectedItems = CollegeListView.SelectedItems.OfType<College>().ToList();
@@ -457,20 +428,30 @@ namespace sis_app.Controls.View
 
         private void DeleteCollegeAndUpdatePrograms(College college)
         {
-            // remove college from all collections
-            _collegeDataService.DeleteCollege(college);
-            _colleges.Remove(college);
-            _allColleges.Remove(college);
 
             // mark related programs as deleted
             var affectedPrograms = _programDataService.GetAllPrograms()
                 .Where(p => p.CollegeCode.Equals(college.Code, StringComparison.OrdinalIgnoreCase))
                 .ToList();
 
+            // remove college from all collections
+            _collegeDataService.DeleteCollege(college);
+            _colleges.Remove(college);
+            _allColleges.Remove(college);
+
             foreach (var program in affectedPrograms)
             {
+                var originalProgram = new Program
+                {
+                    Name = program.Name,
+                    Code = program.Code,
+                    CollegeCode = program.CollegeCode,
+                    DateTime = program.DateTime,
+                    User = program.User
+                };
+
                 program.CollegeCode = DELETED_MARKER;
-                _programDataService.UpdateProgram(program, program);
+                _programDataService.UpdateProgram(originalProgram, program);
             }
         }
 
@@ -504,20 +485,28 @@ namespace sis_app.Controls.View
         {
             try
             {
-                // clear both data files
-                File.WriteAllText("colleges.csv", string.Empty);
-                File.WriteAllText("programs.csv", string.Empty);
+                // Clear only college data
+                File.WriteAllText(_collegeDataService._filePath, string.Empty);
                 LoadColleges();
+
+                MessageBox.Show(
+                    "All college data has been cleared successfully.",
+                    "Success",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information
+                );
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error clearing college data: {ex.Message}",
-                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(
+                    $"Error clearing college data: {ex.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
             }
         }
-        #endregion
 
-        #region Sorting Methods
         private void SortComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             SortColleges();
@@ -568,6 +557,5 @@ namespace sis_app.Controls.View
             }
             CollegeListView.Items.Refresh();
         }
-        #endregion
     }
 }

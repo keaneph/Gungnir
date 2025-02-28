@@ -10,7 +10,7 @@ namespace sis_app.Services
     public class ProgramDataService
     {
         // path to the csv file storing program data
-        private readonly string _filePath;
+        internal readonly string _filePath;
 
         // current user performing operations (defaults to "Admin")
         public string CurrentUser { get; set; } = "Admin";

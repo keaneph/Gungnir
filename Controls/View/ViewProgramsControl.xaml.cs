@@ -629,7 +629,7 @@ namespace sis_app.Controls.View
                     }
                 }
 
-                File.WriteAllText("programs.csv", string.Empty);
+                File.WriteAllText(_programDataService._filePath, string.Empty);
                 LoadPrograms();
             }
             catch (Exception ex)
@@ -642,10 +642,8 @@ namespace sis_app.Controls.View
                 );
             }
         }
-        #endregion
 
         // sorting methods
-        #region Sorting Methods
         private void SortComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             SortPrograms();

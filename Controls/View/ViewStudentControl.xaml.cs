@@ -742,7 +742,7 @@ namespace sis_app.Controls.View
         {
             try
             {
-                File.WriteAllText("students.csv", string.Empty);
+                File.WriteAllText(_studentDataService._filePath, string.Empty);
                 LoadStudents();
             }
             catch (Exception ex)
