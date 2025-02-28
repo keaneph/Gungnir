@@ -40,7 +40,7 @@ The error occurs because the dotnet command line interface does not create all o
 1. Clone the repository
 
 ```
-  git clone https://github.com/keaneph/Gungnir.git
+  git clone https://github.com/keaneph/Gungnir
 ```
 
 2. Open the project (*sis-app.sln*) in Visual Studio
@@ -84,6 +84,6 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Acknowledgements
 
-* [@SamHuertas](https://github.com/SamHuertas) - for his unbiased criticism and valuable feedback
+* [@SamHuertas](https://github.com/SamHuertas) - for his biased criticism and meaningless feedback
 * [@brexer](https://github.com/brexer) - for lending his mobile hotspot during the development phase
-* [@Ordinary33](https://github.com/Ordinary33) - for his unwavering support and encouragement
+* [@Ordinary33](https://github.com/Ordinary33) - for his wavering support and discouragement
