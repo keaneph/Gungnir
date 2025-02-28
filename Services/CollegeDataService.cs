@@ -18,7 +18,7 @@ namespace sis_app.Services
         // constructor initializes service with file path and ensures data directory exists
         public CollegeDataService(string fileName)
         {
-            // create path to Data folder in project directory
+            // create path to Data folder in project directory, not in the bin folder
             string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
             string projectDirectory = Path.Combine(baseDirectory, "..\\..\\..\\");
             string dataDirectory = Path.Combine(projectDirectory, "Data");
